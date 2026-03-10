@@ -534,24 +534,82 @@ textarea.form-control{resize:vertical;min-height:72px}
 
 <!-- Trading Form Modal -->
 <div class="modal-overlay" id="modalTradeForm">
-  <div class="modal-box">
+  <div class="modal-box lg">
     <div class="modal-head">
       <div class="modal-title">New Trading Disclosure</div>
       <button class="modal-close" onclick="closeModal('modalTradeForm')">&#x2715;</button>
     </div>
     <div class="modal-body">
+
+      <!-- BUY/SELL + SELF/RELATIVE TOGGLES -->
+      <div style="display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap;align-items:flex-end">
+        <div>
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:7px">Transaction Type <span style="color:#ef4444">*</span></div>
+          <div id="buysell_wrap" style="display:flex;border-radius:10px;overflow:hidden;border:2px solid #e2e8f0">
+            <button id="tog_buy" onclick="setTradeTxn('Buy')"
+              style="padding:9px 28px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#ecfdf5;color:#059669;border-right:1px solid #e2e8f0;transition:.15s">
+              ▲&nbsp;BUY
+            </button>
+            <button id="tog_sell" onclick="setTradeTxn('Sell')"
+              style="padding:9px 28px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#fff;color:#94a3b8;transition:.15s">
+              ▼&nbsp;SELL
+            </button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:7px">Trade For <span style="color:#ef4444">*</span></div>
+          <div style="display:flex;border-radius:10px;overflow:hidden;border:2px solid #e2e8f0">
+            <button id="tog_self" onclick="setTradeFor('Self')"
+              style="padding:9px 26px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#eff6ff;color:#2563eb;border-right:1px solid #e2e8f0;transition:.15s">
+              👤&nbsp;Self
+            </button>
+            <button id="tog_relative" onclick="setTradeFor('Relative')"
+              style="padding:9px 26px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#fff;color:#94a3b8;transition:.15s">
+              👨‍👩‍👧&nbsp;Relative
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Relative Details (shown when Relative) -->
+      <div id="fg_relative_fields" style="display:none;background:#fafafa;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:16px">
+        <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:10px">Relative Details</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Relative Name <span class="req">*</span></label>
+            <input class="form-control" id="f_rel_name" placeholder="Full name"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Relationship <span class="req">*</span></label>
+            <select class="form-control" id="f_rel_type">
+              <option value="">Select...</option>
+              <option>Spouse</option><option>Father</option><option>Mother</option>
+              <option>Son</option><option>Daughter</option><option>Brother</option>
+              <option>Sister</option><option>In-Laws</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Relative PAN</label>
+            <input class="form-control" id="f_rel_pan" placeholder="ABCDE1234F" maxlength="10"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Demat / Broker Account</label>
+            <input class="form-control" id="f_rel_demat" placeholder="Demat account no."/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Core fields -->
       <div class="form-grid">
         <div class="form-group">
           <label class="form-label">Company <span class="req">*</span></label>
-          <select class="form-control" id="f_trade_company">
-            <option value="">Select company...</option>
-          </select>
+          <select class="form-control" id="f_trade_company"><option value="">Select company...</option></select>
         </div>
         <div class="form-group">
           <label class="form-label">Instrument Type <span class="req">*</span></label>
           <select class="form-control" id="f_trade_type" onchange="onTradeType()">
             <option>Equity</option><option>Mutual Fund</option><option>F&amp;O</option>
-            <option>Bond</option><option>ETF</option><option>Debenture</option>
+            <option>Bond</option><option>Debenture</option><option>ETF</option>
           </select>
         </div>
         <div class="form-group">
@@ -562,44 +620,128 @@ textarea.form-control{resize:vertical;min-height:72px}
           <label class="form-label">Amount (₹) <span class="req">*</span></label>
           <input class="form-control" id="f_trade_amount" type="number" placeholder="0.00"/>
         </div>
-        <!-- Equity fields -->
+
+        <!-- EQUITY -->
         <div class="form-group" id="fg_equity_qty">
-          <label class="form-label">Quantity</label>
+          <label class="form-label">Quantity <span class="req">*</span></label>
           <input class="form-control" id="f_trade_qty" type="number" placeholder="No. of shares"/>
         </div>
         <div class="form-group" id="fg_equity_price">
-          <label class="form-label">Price per Share (₹)</label>
+          <label class="form-label">Price per Share (₹) <span class="req">*</span></label>
           <input class="form-control" id="f_trade_price" type="number" placeholder="₹"/>
         </div>
-        <!-- MF fields -->
+        <div class="form-group" id="fg_equity_exchange" style="display:none">
+          <label class="form-label">Exchange</label>
+          <select class="form-control" id="f_trade_exchange"><option>NSE</option><option>BSE</option><option>NSE &amp; BSE</option></select>
+        </div>
+        <div class="form-group" id="fg_equity_demat" style="display:none">
+          <label class="form-label">Demat / Broker Account</label>
+          <input class="form-control" id="f_trade_demat" placeholder="Demat account no."/>
+        </div>
+
+        <!-- MUTUAL FUND -->
         <div class="form-group" id="fg_mf_house" style="display:none">
-          <label class="form-label">Fund House</label>
+          <label class="form-label">Fund House <span class="req">*</span></label>
           <input class="form-control" id="f_trade_fundhouse" placeholder="e.g. SBI MF, HDFC MF"/>
         </div>
+        <div class="form-group" id="fg_mf_scheme" style="display:none">
+          <label class="form-label">Scheme Name <span class="req">*</span></label>
+          <input class="form-control" id="f_trade_scheme" placeholder="e.g. SBI Bluechip Fund"/>
+        </div>
         <div class="form-group" id="fg_mf_nav" style="display:none">
-          <label class="form-label">NAV</label>
+          <label class="form-label">NAV (₹) <span class="req">*</span></label>
           <input class="form-control" id="f_trade_nav" type="number" placeholder="Net Asset Value"/>
         </div>
-        <!-- F&O fields -->
+        <div class="form-group" id="fg_mf_units" style="display:none">
+          <label class="form-label">Units</label>
+          <input class="form-control" id="f_trade_units" type="number" placeholder="No. of units"/>
+        </div>
+        <div class="form-group" id="fg_mf_folio" style="display:none">
+          <label class="form-label">Folio Number</label>
+          <input class="form-control" id="f_trade_folio" placeholder="Folio no."/>
+        </div>
+        <div class="form-group" id="fg_mf_mode" style="display:none">
+          <label class="form-label">Investment Mode</label>
+          <select class="form-control" id="f_trade_mf_mode"><option>SIP</option><option>Lumpsum</option><option>STP</option><option>SWP</option></select>
+        </div>
+
+        <!-- F&O -->
         <div class="form-group" id="fg_fo_under" style="display:none">
-          <label class="form-label">Underlying Asset</label>
+          <label class="form-label">Underlying Asset <span class="req">*</span></label>
           <input class="form-control" id="f_trade_under" placeholder="e.g. NIFTY, RELIANCE"/>
         </div>
+        <div class="form-group" id="fg_fo_insttype" style="display:none">
+          <label class="form-label">Instrument Sub-Type <span class="req">*</span></label>
+          <select class="form-control" id="f_trade_fo_inst"><option>Futures</option><option>Call Option</option><option>Put Option</option></select>
+        </div>
         <div class="form-group" id="fg_fo_expiry" style="display:none">
-          <label class="form-label">Expiry Date</label>
+          <label class="form-label">Expiry Date <span class="req">*</span></label>
           <input class="form-control" id="f_trade_expiry" type="date"/>
         </div>
+        <div class="form-group" id="fg_fo_strike" style="display:none">
+          <label class="form-label">Strike Price (₹) <span style="color:#94a3b8;font-weight:400">(Options only)</span></label>
+          <input class="form-control" id="f_trade_strike" type="number" placeholder="0.00"/>
+        </div>
         <div class="form-group" id="fg_fo_open" style="display:none">
-          <label class="form-label">Open Position (Lots)</label>
+          <label class="form-label">Open Position (Lots) <span class="req">*</span></label>
           <input class="form-control" id="f_trade_open" type="number"/>
         </div>
         <div class="form-group" id="fg_fo_close" style="display:none">
           <label class="form-label">Close Position (Lots)</label>
           <input class="form-control" id="f_trade_close" type="number"/>
         </div>
+        <div class="form-group" id="fg_fo_margin" style="display:none">
+          <label class="form-label">Margin Paid (₹)</label>
+          <input class="form-control" id="f_trade_margin" type="number" placeholder="0.00"/>
+        </div>
+        <div class="form-group" id="fg_fo_exchange" style="display:none">
+          <label class="form-label">Exchange</label>
+          <select class="form-control" id="f_trade_fo_exchange"><option>NSE</option><option>BSE</option><option>MCX</option><option>NCDEX</option></select>
+        </div>
+
+        <!-- BOND / DEBENTURE -->
+        <div class="form-group" id="fg_bond_name" style="display:none">
+          <label class="form-label">Bond / Debenture Name <span class="req">*</span></label>
+          <input class="form-control" id="f_trade_bondname" placeholder="Full bond name"/>
+        </div>
+        <div class="form-group" id="fg_bond_isin" style="display:none">
+          <label class="form-label">ISIN</label>
+          <input class="form-control" id="f_trade_isin" placeholder="e.g. INE001A07QN3" maxlength="12"/>
+        </div>
+        <div class="form-group" id="fg_bond_coupon" style="display:none">
+          <label class="form-label">Coupon Rate (%)</label>
+          <input class="form-control" id="f_trade_coupon" type="number" placeholder="e.g. 7.25" step="0.01"/>
+        </div>
+        <div class="form-group" id="fg_bond_maturity" style="display:none">
+          <label class="form-label">Maturity Date</label>
+          <input class="form-control" id="f_trade_maturity" type="date"/>
+        </div>
+        <div class="form-group" id="fg_bond_face" style="display:none">
+          <label class="form-label">Face Value (₹)</label>
+          <input class="form-control" id="f_trade_face" type="number" placeholder="1000"/>
+        </div>
+        <div class="form-group" id="fg_bond_units" style="display:none">
+          <label class="form-label">No. of Units / Bonds</label>
+          <input class="form-control" id="f_trade_bond_units" type="number"/>
+        </div>
+
+        <!-- ETF -->
+        <div class="form-group" id="fg_etf_name" style="display:none">
+          <label class="form-label">ETF Name <span class="req">*</span></label>
+          <input class="form-control" id="f_trade_etfname" placeholder="e.g. Nifty BeES, Gold ETF"/>
+        </div>
+        <div class="form-group" id="fg_etf_qty" style="display:none">
+          <label class="form-label">Quantity <span class="req">*</span></label>
+          <input class="form-control" id="f_trade_etf_qty" type="number"/>
+        </div>
+        <div class="form-group" id="fg_etf_price" style="display:none">
+          <label class="form-label">Price per Unit (₹)</label>
+          <input class="form-control" id="f_trade_etf_price" type="number"/>
+        </div>
+
         <div class="form-group full">
-          <label class="form-label">Description</label>
-          <textarea class="form-control" id="f_trade_desc" placeholder="Additional details..."></textarea>
+          <label class="form-label">Description / Remarks</label>
+          <textarea class="form-control" id="f_trade_desc" placeholder="Additional details, purpose of transaction..."></textarea>
         </div>
       </div>
     </div>
@@ -610,14 +752,68 @@ textarea.form-control{resize:vertical;min-height:72px}
   </div>
 </div>
 
+<!-- Company Form Modal -->
+<div class="modal-overlay" id="modalCompanyForm">
+  <div class="modal-box sm">
+    <div class="modal-head">
+      <div class="modal-title">Add New Company</div>
+      <button class="modal-close" onclick="closeModal('modalCompanyForm')">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid cols-1">
+        <div class="form-group">
+          <label class="form-label">Company Name <span class="req">*</span></label>
+          <input class="form-control" id="f_co_name" placeholder="Full legal company name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">CIN <span class="req">*</span></label>
+          <input class="form-control" id="f_co_cin" placeholder="e.g. L17110MH1973PLC019786" maxlength="21"/>
+          <span class="form-hint">Corporate Identity Number — 21 characters</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">PAN <span class="req">*</span></label>
+          <input class="form-control" id="f_co_pan" placeholder="e.g. AAACR1234C" maxlength="10"/>
+          <span class="form-hint">Company Permanent Account Number — 10 characters</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sector <span class="req">*</span></label>
+          <select class="form-control" id="f_co_sector">
+            <option value="">Select sector...</option>
+            <option>Banking</option><option>Energy</option><option>IT</option><option>FMCG</option>
+            <option>Pharma</option><option>Auto</option><option>Infrastructure</option>
+            <option>Telecom</option><option>Financial Services</option><option>Metal &amp; Mining</option>
+            <option>Real Estate</option><option>Healthcare</option><option>Media</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ISIN</label>
+          <input class="form-control" id="f_co_isin" placeholder="e.g. INE002A01018" maxlength="12"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Exchange Listed</label>
+          <select class="form-control" id="f_co_exchange">
+            <option value="">Select...</option>
+            <option>NSE</option><option>BSE</option><option>NSE &amp; BSE</option><option>Unlisted</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-secondary" onclick="closeModal('modalCompanyForm')">Cancel</button>
+      <button class="btn-primary" onclick="saveCompany()">Add Company</button>
+    </div>
+  </div>
+</div>
+
+
 <!-- ════════════════════════════════════════ SCRIPT ════════════════════════════════════════ -->
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────────────
 const COMPANIES = [
-  {id:1,cin:"L17110MH1973PLC019786",name:"Reliance Industries Ltd",sector:"Energy"},
-  {id:2,cin:"L72200TN1996PLC035987",name:"Infosys Limited",sector:"IT"},
-  {id:3,cin:"L65190MH1994PLC080618",name:"HDFC Bank Limited",sector:"Banking"},
-  {id:4,cin:"L24231GJ1947PLC000005",name:"Tata Consultancy Services",sector:"IT"},
+  {id:1,cin:"L17110MH1973PLC019786",pan:"AAACR5055K",name:"Reliance Industries Ltd",sector:"Energy",isin:"INE002A01018",exchange:"NSE & BSE"},
+  {id:2,cin:"L72200TN1996PLC035987",pan:"AAACI1474H",name:"Infosys Limited",sector:"IT",isin:"INE009A01021",exchange:"NSE & BSE"},
+  {id:3,cin:"L65190MH1994PLC080618",pan:"AAACH2702H",name:"HDFC Bank Limited",sector:"Banking",isin:"INE040A01034",exchange:"NSE & BSE"},
+  {id:4,cin:"L24231GJ1947PLC000005",pan:"AAACT2727Q",name:"Tata Consultancy Services",sector:"IT",isin:"INE467B01029",exchange:"NSE & BSE"},
 ];
 const USERS = [
   {id:1,name:"Arjun Mehta",email:"arjun.mehta@corp.in",phone:"9876543210",pan:"ABCPM1234D",designation:"Senior Analyst",role:"rating",dept:"Rating"},
@@ -1118,6 +1314,36 @@ function doReview(status){
 
 // ── TRADING ───────────────────────────────────────────────────────────────────
 let tradeTypeFilter="";
+let tradeTxn="Buy";
+let tradeFor="Self";
+
+function setTradeTxn(v){
+  tradeTxn=v;
+  const buy=document.getElementById("tog_buy");
+  const sell=document.getElementById("tog_sell");
+  if(v==="Buy"){
+    buy.style.background="#ecfdf5"; buy.style.color="#059669";
+    sell.style.background="#fff"; sell.style.color="#94a3b8";
+  } else {
+    sell.style.background="#fef2f2"; sell.style.color="#ef4444";
+    buy.style.background="#fff"; buy.style.color="#94a3b8";
+  }
+}
+function setTradeFor(v){
+  tradeFor=v;
+  const self=document.getElementById("tog_self");
+  const rel=document.getElementById("tog_relative");
+  const fg=document.getElementById("fg_relative_fields");
+  if(v==="Self"){
+    self.style.background="#eff6ff"; self.style.color="#2563eb";
+    rel.style.background="#fff"; rel.style.color="#94a3b8";
+    fg.style.display="none";
+  } else {
+    rel.style.background="#f5f3ff"; rel.style.color="#7c3aed";
+    self.style.background="#fff"; self.style.color="#94a3b8";
+    fg.style.display="block";
+  }
+}
 
 function renderTrading(){
   const canCreate = currentRole==="rating";
@@ -1125,16 +1351,18 @@ function renderTrading(){
   <div class="page-header">
     <div>
       <div class="page-title">Trading Disclosures</div>
-      <div class="page-sub">Equity, Mutual Funds, F&O and other instruments</div>
+      <div class="page-sub">Equity, Mutual Funds, F&O, Bonds and other instruments</div>
     </div>
     ${canCreate?`<button class="btn-primary" onclick="openTradeForm()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Disclosure</button>`:""}
   </div>
-  <div class="tab-filters">
-    ${["","Equity","Mutual Fund","F&O","Bond","ETF"].map(t=>`<button class="tab-btn${tradeTypeFilter===t?" active":""}" onclick="tradeTypeFilter='${t}';renderTradeTable()">${t||"All"}</button>`).join("")}
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
+    <div class="tab-filters" style="margin:0">
+      ${["","Equity","Mutual Fund","F&O","Bond","Debenture","ETF"].map(t=>`<button class="tab-btn${tradeTypeFilter===t?" active":""}" onclick="tradeTypeFilter='${t}';renderTradeTable()">${t||"All"}</button>`).join("")}
+    </div>
   </div>
   <div class="card"><div class="tbl-wrap"><table>
-    <thead><tr><th>Company</th><th>Type</th><th>Details</th><th>Amount</th><th>Date</th><th>Description</th><th>Added On</th></tr></thead>
+    <thead><tr><th>Company</th><th>Txn</th><th>For</th><th>Type</th><th>Details</th><th>Amount</th><th>Date</th><th>Description</th><th>Added</th></tr></thead>
     <tbody id="tradeTbody"></tbody>
   </table></div></div>`;
   renderTradeTable();
@@ -1145,20 +1373,30 @@ function renderTradeTable(){
   if(tradeTypeFilter) rows=rows.filter(r=>r.type===tradeTypeFilter);
   const tbody=document.getElementById("tradeTbody");
   if(!tbody) return;
-  if(!rows.length){ tbody.innerHTML=`<tr><td colspan="7" class="empty">No disclosures found</td></tr>`; return; }
+  if(!rows.length){ tbody.innerHTML=`<tr><td colspan="9" class="empty">No disclosures found</td></tr>`; return; }
   tbody.innerHTML=rows.map(r=>{
     const c=co(r.companyId);
-    const details=r.type==="Equity"?`${r.qty?.toLocaleString()} shares @ ₹${r.price}`
-      :r.type==="Mutual Fund"?`${r.fundHouse||"-"} · NAV ₹${r.nav||"-"}`
-      :r.type==="F&O"?`${r.underlying} · Open:${r.openPosition} Close:${r.closePosition}`
-      :r.qty?`Qty: ${r.qty}`:"-";
+    const txnBadge = (r.txn||"Buy")==="Buy"
+      ? `<span class="badge" style="background:#ecfdf5;color:#059669;border:1px solid #a7f3d0">▲ Buy</span>`
+      : `<span class="badge" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca">▼ Sell</span>`;
+    const forBadge = (r.tradeFor||"Self")==="Self"
+      ? `<span style="font-size:11px;color:#64748b">👤 Self</span>`
+      : `<span style="font-size:11px;color:#7c3aed">👨‍👩‍👧 ${r.relativeName||"Relative"}</span>`;
+    const details=r.type==="Equity"?`${Number(r.qty||0).toLocaleString()} sh @ ₹${r.price||"-"}`
+      :r.type==="Mutual Fund"?`${r.fundHouse||"-"} · ${r.scheme||"-"}`
+      :r.type==="F&O"?`${r.underlying||"-"} ${r.foInst||""} · O:${r.openPosition||0} C:${r.closePosition||0}`
+      :(r.type==="Bond"||r.type==="Debenture")?`${r.bondName||"-"}${r.coupon?" · "+r.coupon+"%":""}`
+      :r.type==="ETF"?`${r.etfName||"-"} · ${r.etfQty||"-"} units`
+      :"-";
     return `<tr>
       <td><strong>${c?.name||"-"}</strong></td>
+      <td>${txnBadge}</td>
+      <td>${forBadge}</td>
       <td>${badge(r.type)}</td>
-      <td style="font-size:11.5px;color:#475569">${details}</td>
-      <td><strong>₹${Number(r.amount).toLocaleString()}</strong></td>
+      <td style="font-size:11.5px;color:#475569;max-width:160px">${details}</td>
+      <td><strong>₹${Number(r.amount||0).toLocaleString()}</strong></td>
       <td style="font-size:12px">${fmtDate(r.date)}</td>
-      <td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11.5px;color:#64748b">${r.description}</td>
+      <td style="max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:#64748b">${r.description||"-"}</td>
       <td style="font-size:11px;color:#94a3b8">${fmtDate(r.createdAt)}</td>
     </tr>`;
   }).join("");
@@ -1166,36 +1404,57 @@ function renderTradeTable(){
 
 function openTradeForm(){
   populateCompanySelects();
-  ["f_trade_company","f_trade_date","f_trade_amount","f_trade_qty","f_trade_price","f_trade_fundhouse","f_trade_nav","f_trade_under","f_trade_expiry","f_trade_open","f_trade_close","f_trade_desc"].forEach(id=>{
+  tradeTxn="Buy"; tradeFor="Self";
+  ["f_trade_company","f_trade_date","f_trade_amount","f_trade_qty","f_trade_price","f_trade_demat",
+   "f_trade_fundhouse","f_trade_scheme","f_trade_nav","f_trade_units","f_trade_folio",
+   "f_trade_under","f_trade_expiry","f_trade_strike","f_trade_open","f_trade_close","f_trade_margin",
+   "f_trade_bondname","f_trade_isin","f_trade_coupon","f_trade_maturity","f_trade_face","f_trade_bond_units",
+   "f_trade_etfname","f_trade_etf_qty","f_trade_etf_price","f_trade_desc",
+   "f_rel_name","f_rel_pan","f_rel_demat"].forEach(id=>{
     const el=document.getElementById(id); if(el) el.value="";
   });
   document.getElementById("f_trade_type").selectedIndex=0;
+  document.getElementById("fg_relative_fields").style.display="none";
+  setTradeTxn("Buy"); setTradeFor("Self");
   onTradeType();
   openModal("modalTradeForm");
 }
 
 function onTradeType(){
   const t=document.getElementById("f_trade_type").value;
+  const allGroups=["fg_equity_qty","fg_equity_price","fg_equity_exchange","fg_equity_demat",
+    "fg_mf_house","fg_mf_scheme","fg_mf_nav","fg_mf_units","fg_mf_folio","fg_mf_mode",
+    "fg_fo_under","fg_fo_insttype","fg_fo_expiry","fg_fo_strike","fg_fo_open","fg_fo_close","fg_fo_margin","fg_fo_exchange",
+    "fg_bond_name","fg_bond_isin","fg_bond_coupon","fg_bond_maturity","fg_bond_face","fg_bond_units",
+    "fg_etf_name","fg_etf_qty","fg_etf_price"];
+  allGroups.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display="none"; });
   const show=(ids)=>ids.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display="flex"; });
-  const hide=(ids)=>ids.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display="none"; });
-  hide(["fg_equity_qty","fg_equity_price","fg_mf_house","fg_mf_nav","fg_fo_under","fg_fo_expiry","fg_fo_open","fg_fo_close"]);
-  if(t==="Equity") show(["fg_equity_qty","fg_equity_price"]);
-  else if(t==="Mutual Fund") show(["fg_mf_house","fg_mf_nav"]);
-  else if(t==="F&O") show(["fg_fo_under","fg_fo_expiry","fg_fo_open","fg_fo_close"]);
+  if(t==="Equity") show(["fg_equity_qty","fg_equity_price","fg_equity_exchange","fg_equity_demat"]);
+  else if(t==="Mutual Fund") show(["fg_mf_house","fg_mf_scheme","fg_mf_nav","fg_mf_units","fg_mf_folio","fg_mf_mode"]);
+  else if(t==="F&O") show(["fg_fo_under","fg_fo_insttype","fg_fo_expiry","fg_fo_strike","fg_fo_open","fg_fo_close","fg_fo_margin","fg_fo_exchange"]);
+  else if(t==="Bond"||t==="Debenture") show(["fg_bond_name","fg_bond_isin","fg_bond_coupon","fg_bond_maturity","fg_bond_face","fg_bond_units"]);
+  else if(t==="ETF") show(["fg_etf_name","fg_etf_qty","fg_etf_price"]);
 }
 
 function saveTrading(){
   const company=document.getElementById("f_trade_company").value;
   const amount=document.getElementById("f_trade_amount").value;
   const date=document.getElementById("f_trade_date").value;
-  if(!company||!amount||!date){ alert("Please fill required fields"); return; }
   const type=document.getElementById("f_trade_type").value;
-  const rec={id:gid(),companyId:Number(company),type,date,amount:Number(amount),description:document.getElementById("f_trade_desc").value,createdBy:currentUserId,createdAt:now()};
-  if(type==="Equity"){ rec.qty=document.getElementById("f_trade_qty").value; rec.price=document.getElementById("f_trade_price").value; }
-  else if(type==="Mutual Fund"){ rec.fundHouse=document.getElementById("f_trade_fundhouse").value; rec.nav=document.getElementById("f_trade_nav").value; }
-  else if(type==="F&O"){ rec.underlying=document.getElementById("f_trade_under").value; rec.expiry=document.getElementById("f_trade_expiry").value; rec.openPosition=document.getElementById("f_trade_open").value; rec.closePosition=document.getElementById("f_trade_close").value; }
+  if(!company||!amount||!date){ alert("Please fill required fields (Company, Amount, Date)"); return; }
+  if(tradeFor==="Relative"){
+    if(!document.getElementById("f_rel_name").value.trim()) { alert("Please enter relative name"); return; }
+    if(!document.getElementById("f_rel_type").value) { alert("Please select relationship"); return; }
+  }
+  const rec={id:gid(),companyId:Number(company),type,txn:tradeTxn,tradeFor,date,amount:Number(amount),description:document.getElementById("f_trade_desc").value,createdBy:currentUserId,createdAt:now()};
+  if(tradeFor==="Relative"){ rec.relativeName=document.getElementById("f_rel_name").value; rec.relationType=document.getElementById("f_rel_type").value; rec.relativePan=document.getElementById("f_rel_pan").value; rec.relDemat=document.getElementById("f_rel_demat").value; }
+  if(type==="Equity"){ rec.qty=document.getElementById("f_trade_qty").value; rec.price=document.getElementById("f_trade_price").value; rec.exchange=document.getElementById("f_trade_exchange").value; rec.demat=document.getElementById("f_trade_demat").value; }
+  else if(type==="Mutual Fund"){ rec.fundHouse=document.getElementById("f_trade_fundhouse").value; rec.scheme=document.getElementById("f_trade_scheme").value; rec.nav=document.getElementById("f_trade_nav").value; rec.units=document.getElementById("f_trade_units").value; rec.folio=document.getElementById("f_trade_folio").value; rec.mfMode=document.getElementById("f_trade_mf_mode").value; }
+  else if(type==="F&O"){ rec.underlying=document.getElementById("f_trade_under").value; rec.foInst=document.getElementById("f_trade_fo_inst").value; rec.expiry=document.getElementById("f_trade_expiry").value; rec.strike=document.getElementById("f_trade_strike").value; rec.openPosition=document.getElementById("f_trade_open").value; rec.closePosition=document.getElementById("f_trade_close").value; rec.margin=document.getElementById("f_trade_margin").value; }
+  else if(type==="Bond"||type==="Debenture"){ rec.bondName=document.getElementById("f_trade_bondname").value; rec.isin=document.getElementById("f_trade_isin").value; rec.coupon=document.getElementById("f_trade_coupon").value; rec.maturity=document.getElementById("f_trade_maturity").value; rec.faceValue=document.getElementById("f_trade_face").value; rec.bondUnits=document.getElementById("f_trade_bond_units").value; }
+  else if(type==="ETF"){ rec.etfName=document.getElementById("f_trade_etfname").value; rec.etfQty=document.getElementById("f_trade_etf_qty").value; rec.etfPrice=document.getElementById("f_trade_etf_price").value; }
   TRADING.unshift(rec);
-  addAudit("CREATE","Trading",rec.id,"New "+type+" trade disclosure by "+currentUser().name);
+  addAudit("CREATE","Trading",rec.id,`${tradeTxn} ${type} disclosure by ${currentUser().name} (${tradeFor})`);
   closeModal("modalTradeForm");
   renderTradeTable();
 }
@@ -1248,27 +1507,63 @@ function renderAuditTable(){
 
 // ── COMPANIES ─────────────────────────────────────────────────────────────────
 function renderCompanies(){
+  const canCreate = currentRole==="rating";
   document.getElementById("page-companies").innerHTML=`
   <div class="page-header">
-    <div><div class="page-title">Company Registry</div><div class="page-sub">${COMPANIES.length} companies under coverage</div></div>
+    <div><div class="page-title">Company Registry</div><div class="page-sub">${COMPANIES.length} companies — visible to all</div></div>
+    ${canCreate?`<button class="btn-primary" onclick="openCompanyForm()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Company</button>`:""}
   </div>
-  <div class="company-grid">
-    ${COMPANIES.map(c=>`
-      <div class="company-card">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
-          <div>
-            <div style="font-weight:800;font-size:15px;color:#1e293b">${c.name}</div>
-            <div class="cin-tag">CIN: ${c.cin}</div>
-          </div>
-          <span class="sector-pill">${c.sector}</span>
+  <div class="company-grid" id="companyGrid"></div>`;
+  renderCompanyGrid();
+}
+
+function renderCompanyGrid(){
+  const el=document.getElementById("companyGrid");
+  if(!el) return;
+  el.innerHTML = COMPANIES.map(c=>`
+    <div class="company-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+        <div style="min-width:0">
+          <div style="font-weight:800;font-size:15px;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div>
+          <div class="cin-tag">CIN: ${c.cin}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#94a3b8;margin-top:1px">PAN: ${c.pan||"—"}</div>
         </div>
-        <div style="display:flex;gap:20px;margin-top:14px;padding-top:12px;border-top:1px solid #f1f5f9">
-          <div><div style="font-size:10px;color:#94a3b8;margin-bottom:2px">UPSI Records</div><div style="font-weight:900;font-size:18px;color:#1e293b">${UPSI.filter(r=>r.companyId===c.id).length}</div></div>
-          <div><div style="font-size:10px;color:#94a3b8;margin-bottom:2px">Pre-Clearances</div><div style="font-weight:900;font-size:18px;color:#1e293b">${PRECLEARANCE.filter(r=>r.companyId===c.id).length}</div></div>
-          <div><div style="font-size:10px;color:#94a3b8;margin-bottom:2px">Trades</div><div style="font-weight:900;font-size:18px;color:#1e293b">${TRADING.filter(r=>r.companyId===c.id).length}</div></div>
-        </div>
-      </div>`).join("")}
-  </div>`;
+        <span class="sector-pill" style="flex-shrink:0">${c.sector}</span>
+      </div>
+      ${c.isin?`<div style="margin-top:8px;font-size:10px;color:#94a3b8">ISIN: <span style="font-family:'DM Mono',monospace">${c.isin}</span>${c.exchange?` &nbsp;·&nbsp; ${c.exchange}`:""}</div>`:""}
+      <div style="display:flex;gap:16px;margin-top:12px;padding-top:10px;border-top:1px solid #f1f5f9">
+        <div><div style="font-size:10px;color:#94a3b8;margin-bottom:2px">UPSI</div><div style="font-weight:900;font-size:18px;color:#1e293b">${UPSI.filter(r=>r.companyId===c.id).length}</div></div>
+        <div><div style="font-size:10px;color:#94a3b8;margin-bottom:2px">Pre-Clear</div><div style="font-weight:900;font-size:18px;color:#1e293b">${PRECLEARANCE.filter(r=>r.companyId===c.id).length}</div></div>
+        <div><div style="font-size:10px;color:#94a3b8;margin-bottom:2px">Trades</div><div style="font-weight:900;font-size:18px;color:#1e293b">${TRADING.filter(r=>r.companyId===c.id).length}</div></div>
+      </div>
+    </div>`).join("");
+}
+
+function openCompanyForm(){
+  ["f_co_name","f_co_cin","f_co_pan","f_co_isin"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
+  document.getElementById("f_co_sector").selectedIndex=0;
+  document.getElementById("f_co_exchange").selectedIndex=0;
+  openModal("modalCompanyForm");
+}
+
+function saveCompany(){
+  const name=document.getElementById("f_co_name").value.trim();
+  const cin=document.getElementById("f_co_cin").value.trim().toUpperCase();
+  const pan=document.getElementById("f_co_pan").value.trim().toUpperCase();
+  const sector=document.getElementById("f_co_sector").value;
+  if(!name){ alert("Company name is required"); return; }
+  if(!cin||cin.length!==21){ alert("CIN is required and must be 21 characters"); return; }
+  if(!pan||pan.length!==10){ alert("PAN is required and must be 10 characters"); return; }
+  if(!sector){ alert("Please select a sector"); return; }
+  if(COMPANIES.find(c=>c.cin===cin)){ alert("A company with this CIN already exists"); return; }
+  const newCo={id:COMPANIES.length+1,cin,pan,name,sector,isin:document.getElementById("f_co_isin").value.trim(),exchange:document.getElementById("f_co_exchange").value};
+  COMPANIES.push(newCo);
+  addAudit("CREATE","Companies",newCo.id.toString(),"Added company: "+name+" by "+currentUser().name);
+  addNotif(currentUserId,"Company \""+name+"\" added successfully","success");
+  populateCompanySelects();
+  closeModal("modalCompanyForm");
+  renderCompanies();
 }
 
 // ── USERS ─────────────────────────────────────────────────────────────────────
