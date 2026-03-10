@@ -1,0 +1,1101 @@
+import { useState, useEffect, useRef } from "react";
+
+// ─── MOCK DATA ───────────────────────────────────────────────────────────────
+const COMPANIES = [
+  { id: 1, cin: "L17110MH1973PLC019786", name: "Reliance Industries Ltd", sector: "Energy" },
+  { id: 2, cin: "L72200TN1996PLC035987", name: "Infosys Limited", sector: "IT" },
+  { id: 3, cin: "L65190MH1994PLC080618", name: "HDFC Bank Limited", sector: "Banking" },
+  { id: 4, cin: "L24231GJ1947PLC000005", name: "Tata Consultancy Services", sector: "IT" },
+];
+
+const USERS = [
+  { id: 1, name: "Arjun Mehta", email: "arjun.mehta@corp.in", phone: "9876543210", pan: "ABCPM1234D", designation: "Senior Analyst", role: "rating", dept: "Rating" },
+  { id: 2, name: "Priya Sharma", email: "priya.sharma@corp.in", phone: "9123456789", pan: "XYZPS5678F", designation: "Compliance Officer", role: "compliance", dept: "Compliance" },
+  { id: 3, name: "Rahul Verma", email: "rahul.verma@corp.in", phone: "9988776655", pan: "PQRV9012G", designation: "Analyst", role: "rating", dept: "Rating" },
+  { id: 4, name: "Sneha Iyer", email: "sneha.iyer@corp.in", phone: "9871234560", pan: "MNOI3456H", designation: "Chief Compliance", role: "compliance", dept: "Compliance" },
+  { id: 5, name: "Vikram Singh", email: "vikram.singh@corp.in", phone: "9765432100", pan: "ABCVS7890J", designation: "Junior Analyst", role: "rating", dept: "Rating" },
+];
+
+const generateId = () => Math.random().toString(36).substr(2, 9);
+const now = () => new Date().toISOString();
+const fmtDate = (d) => d ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "-";
+const fmtTime = (d) => d ? new Date(d).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) : "-";
+
+// ─── INITIAL STATE ────────────────────────────────────────────────────────────
+const INIT_UPSI = [
+  { id: "u1", companyId: 1, nature: "UPSI", period: "Quarterly", quarter: "Q1", month: "", year: "2024", category: "Financial Results", severity: "High", source: { name: "Arjun Mehta", phone: "9876543210", email: "arjun.mehta@corp.in", pan: "ABCPM1234D", designation: "Senior Analyst", from: "Email" }, time: "2024-04-10T10:30:00", mode: "Email", receivers: [1, 3], createdBy: 1, createdAt: "2024-04-10T10:30:00" },
+  { id: "u2", companyId: 2, nature: "Non-UPSI", period: "Monthly", quarter: "", month: "05", year: "2024", category: "Operational Update", severity: "Low", source: { name: "Priya Sharma", phone: "9123456789", email: "priya.sharma@corp.in", pan: "XYZPS5678F", designation: "Compliance Officer", from: "Meeting" }, time: "2024-05-15T14:00:00", mode: "Meeting", receivers: [2], createdBy: 3, createdAt: "2024-05-15T14:00:00" },
+];
+const INIT_PRECLEARANCE = [
+  { id: "p1", companyId: 1, cin: "L17110MH1973PLC019786", qty: 500, expDate: "2024-06-20", description: "Sell shares before quarter close", status: "Pending", createdBy: 1, createdAt: "2024-06-15T09:00:00", reviewedBy: null, reviewedAt: null, remarks: "" },
+  { id: "p2", companyId: 2, cin: "L72200TN1996PLC035987", qty: 200, expDate: "2024-05-25", description: "Buy shares post results", status: "Approved", createdBy: 3, createdAt: "2024-05-20T11:00:00", reviewedBy: 2, reviewedAt: "2024-05-21T10:00:00", remarks: "Approved after review" },
+];
+const INIT_TRADING = [
+  { id: "t1", companyId: 1, type: "Equity", qty: 100, amount: 25000, date: "2024-06-01", price: 250, description: "Market buy", createdBy: 1, createdAt: "2024-06-01T12:00:00" },
+  { id: "t2", companyId: 3, type: "Mutual Fund", fundHouse: "SBI MF", nav: 45.23, amount: 10000, date: "2024-06-05", description: "SIP investment", createdBy: 3, createdAt: "2024-06-05T09:00:00" },
+  { id: "t3", companyId: 1, type: "F&O", openPosition: 5, closePosition: 3, amount: 75000, date: "2024-06-10", underlying: "RELIANCE", expiry: "2024-06-27", description: "Futures position", createdBy: 1, createdAt: "2024-06-10T15:00:00" },
+];
+const INIT_AUDIT = [
+  { id: "a1", userId: 1, userName: "Arjun Mehta", action: "CREATE", module: "UPSI", recordId: "u1", details: "Created UPSI record for Reliance Industries", timestamp: "2024-04-10T10:30:00" },
+  { id: "a2", userId: 2, userName: "Priya Sharma", action: "VIEW", module: "Pre-Clearance", recordId: "p1", details: "Viewed pre-clearance request", timestamp: "2024-06-16T08:45:00" },
+  { id: "a3", userId: 2, userName: "Priya Sharma", action: "APPROVE", module: "Pre-Clearance", recordId: "p2", details: "Approved pre-clearance for Rahul Verma", timestamp: "2024-05-21T10:00:00" },
+];
+const INIT_NOTIFS = [
+  { id: "n1", userId: 1, message: "Your pre-clearance request P2 has been approved", type: "success", read: false, timestamp: "2024-05-21T10:01:00" },
+  { id: "n2", userId: 2, message: "New pre-clearance request submitted by Arjun Mehta", type: "info", read: false, timestamp: "2024-06-15T09:01:00" },
+  { id: "n3", userId: 1, message: "New UPSI record added for Reliance Industries", type: "info", read: true, timestamp: "2024-04-10T10:31:00" },
+];
+
+// ─── ICONS (inline SVG) ───────────────────────────────────────────────────────
+const Icon = ({ name, size = 16, color = "currentColor" }) => {
+  const icons = {
+    dashboard: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
+    upsi: <><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></>,
+    clearance: <><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></>,
+    trading: <><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></>,
+    audit: <><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></>,
+    company: <><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></>,
+    users: <><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></>,
+    bell: <><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></>,
+    plus: <><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
+    check: <polyline points="20 6 9 17 4 12"/>,
+    x: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
+    eye: <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>,
+    edit: <><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></>,
+    logout: <><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>,
+    chevron: <polyline points="6 9 12 15 18 9"/>,
+    shield: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></>,
+    filter: <><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></>,
+    alert: <><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></>,
+    info: <><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></>,
+    clock: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+    building: <><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M16 6h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01"/></>,
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {icons[name] || null}
+    </svg>
+  );
+};
+
+// ─── BADGE ────────────────────────────────────────────────────────────────────
+const Badge = ({ text, type = "default" }) => {
+  const colors = {
+    default: "bg-slate-100 text-slate-700",
+    success: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    danger: "bg-red-50 text-red-700 border border-red-200",
+    warning: "bg-amber-50 text-amber-700 border border-amber-200",
+    info: "bg-blue-50 text-blue-700 border border-blue-200",
+    purple: "bg-purple-50 text-purple-700 border border-purple-200",
+  };
+  const map = {
+    High: "danger", Critical: "danger", Medium: "warning", Low: "success",
+    Approved: "success", Rejected: "danger", Pending: "warning",
+    UPSI: "danger", "Non-UPSI": "success",
+    CREATE: "info", UPDATE: "warning", DELETE: "danger", VIEW: "default", APPROVE: "success", REJECT: "danger",
+    Equity: "info", "Mutual Fund": "success", "F&O": "purple",
+  };
+  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${colors[map[text] || type]}`}>{text}</span>;
+};
+
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+const Modal = ({ title, onClose, children, size = "md" }) => {
+  const sizes = { sm: "max-w-md", md: "max-w-2xl", lg: "max-w-4xl", xl: "max-w-6xl" };
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(15,23,42,0.7)", backdropFilter: "blur(4px)" }}>
+      <div className={`bg-white rounded-2xl shadow-2xl w-full ${sizes[size]} max-h-[90vh] flex flex-col animate-fadeIn`} style={{ animation: "fadeUp 0.2s ease" }}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <h3 className="font-bold text-slate-800 text-lg">{title}</h3>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"><Icon name="x" size={18}/></button>
+        </div>
+        <div className="overflow-y-auto flex-1 px-6 py-5">{children}</div>
+      </div>
+    </div>
+  );
+};
+
+// ─── FORM FIELD ───────────────────────────────────────────────────────────────
+const Field = ({ label, required, children, hint }) => (
+  <div className="flex flex-col gap-1.5">
+    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{label}{required && <span className="text-red-500 ml-0.5">*</span>}</label>
+    {children}
+    {hint && <p className="text-xs text-slate-400">{hint}</p>}
+  </div>
+);
+
+const Input = ({ ...props }) => (
+  <input className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-300 transition-all" {...props} />
+);
+
+const Select = ({ children, ...props }) => (
+  <select className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none" {...props}>{children}</select>
+);
+
+const Textarea = ({ ...props }) => (
+  <textarea className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-300 resize-none transition-all" rows={3} {...props} />
+);
+
+// ─── STAT CARD ────────────────────────────────────────────────────────────────
+const StatCard = ({ label, value, icon, color, sub }) => {
+  const colors = {
+    blue: { bg: "bg-blue-50", icon: "text-blue-500", border: "border-blue-100", val: "text-blue-700" },
+    red: { bg: "bg-red-50", icon: "text-red-500", border: "border-red-100", val: "text-red-700" },
+    green: { bg: "bg-emerald-50", icon: "text-emerald-500", border: "border-emerald-100", val: "text-emerald-700" },
+    amber: { bg: "bg-amber-50", icon: "text-amber-500", border: "border-amber-100", val: "text-amber-700" },
+    purple: { bg: "bg-purple-50", icon: "text-purple-500", border: "border-purple-100", val: "text-purple-700" },
+  };
+  const c = colors[color] || colors.blue;
+  return (
+    <div className={`rounded-2xl p-5 border ${c.border} ${c.bg} flex items-start gap-4`}>
+      <div className={`p-2.5 rounded-xl bg-white shadow-sm ${c.icon}`}><Icon name={icon} size={20}/></div>
+      <div>
+        <p className="text-xs text-slate-500 font-medium mb-0.5">{label}</p>
+        <p className={`text-2xl font-black ${c.val}`}>{value}</p>
+        {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
+      </div>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  APP
+// ═══════════════════════════════════════════════════════════════════════════════
+export default function App() {
+  const [role, setRole] = useState("rating"); // rating | compliance
+  const [currentUser] = useState(USERS[0]); // logged-in user (Arjun = rating)
+  const [activeModule, setActiveModule] = useState("dashboard");
+  const [upsiRecords, setUpsiRecords] = useState(INIT_UPSI);
+  const [preclearance, setPreclearance] = useState(INIT_PRECLEARANCE);
+  const [trading, setTrading] = useState(INIT_TRADING);
+  const [auditLog, setAuditLog] = useState(INIT_AUDIT);
+  const [notifications, setNotifications] = useState(INIT_NOTIFS);
+  const [showNotif, setShowNotif] = useState(false);
+
+  const addAudit = (action, module, recordId, details) => {
+    const log = { id: generateId(), userId: currentUser.id, userName: currentUser.name, action, module, recordId, details, timestamp: now() };
+    setAuditLog(prev => [log, ...prev]);
+  };
+
+  const addNotif = (userId, message, type = "info") => {
+    const n = { id: generateId(), userId, message, type, read: false, timestamp: now() };
+    setNotifications(prev => [n, ...prev]);
+  };
+
+  const myNotifs = notifications.filter(n => n.userId === currentUser.id);
+  const unreadCount = myNotifs.filter(n => !n.read).length;
+
+  const markAllRead = () => setNotifications(prev => prev.map(n => n.userId === currentUser.id ? { ...n, read: true } : n));
+
+  const navItems = [
+    { id: "dashboard", label: "Dashboard", icon: "dashboard" },
+    { id: "upsi", label: "UPSI Module", icon: "upsi" },
+    { id: "preclearance", label: "Pre-Clearance", icon: "clearance" },
+    { id: "trading", label: "Trading Disclosure", icon: "trading" },
+    { id: "audit", label: "Audit Log", icon: "audit" },
+    { id: "companies", label: "Companies", icon: "company" },
+    { id: "users", label: "Users", icon: "users" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans flex flex-col" style={{ fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap');
+        * { box-sizing: border-box; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes slideIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:translateX(0); } }
+        .animate-fadeUp { animation: fadeUp 0.25s ease; }
+        .animate-slideIn { animation: slideIn 0.2s ease; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .nav-item { transition: all 0.15s ease; }
+        .nav-item:hover { background: rgba(59,130,246,0.08); }
+        .nav-item.active { background: #1e40af; color: white; }
+        .nav-item.active svg { stroke: white; }
+        input, select, textarea { font-family: inherit; }
+        table { border-collapse: collapse; width: 100%; }
+        th { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; }
+        td { font-size: 13px; color: #334155; }
+        tr:hover td { background: #f8fafc; }
+      `}</style>
+
+      {/* TOP BAR */}
+      <header className="bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between sticky top-0 z-40 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow">
+            <Icon name="shield" size={16} color="white"/>
+          </div>
+          <div>
+            <h1 className="font-black text-slate-800 text-base leading-none">ComplyTrack</h1>
+            <p className="text-[10px] text-slate-400 font-medium">SEBI UPSI Compliance Portal</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Role Toggle */}
+          <div className="flex items-center gap-2 bg-slate-100 rounded-xl p-1">
+            <span className="text-xs text-slate-500 font-semibold px-2">View as:</span>
+            <select
+              value={role}
+              onChange={e => { setRole(e.target.value); setActiveModule("dashboard"); }}
+              className="text-xs font-bold bg-blue-600 text-white rounded-lg px-3 py-1.5 border-none outline-none cursor-pointer"
+              style={{ fontFamily: "inherit" }}
+            >
+              <option value="rating">⚡ Rating Team</option>
+              <option value="compliance">🛡️ Compliance Team</option>
+            </select>
+          </div>
+
+          {/* Notifications */}
+          <div className="relative">
+            <button onClick={() => setShowNotif(!showNotif)} className="relative p-2 rounded-xl hover:bg-slate-100 text-slate-500 transition-colors">
+              <Icon name="bell" size={18}/>
+              {unreadCount > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] font-black text-white flex items-center justify-center">{unreadCount}</span>}
+            </button>
+            {showNotif && (
+              <div className="absolute right-0 top-11 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 animate-fadeUp overflow-hidden">
+                <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                  <span className="font-bold text-slate-700 text-sm">Notifications</span>
+                  <button onClick={markAllRead} className="text-xs text-blue-600 font-semibold hover:text-blue-800">Mark all read</button>
+                </div>
+                <div className="max-h-64 overflow-y-auto">
+                  {myNotifs.length === 0 ? <p className="text-slate-400 text-sm text-center py-6">No notifications</p> :
+                    myNotifs.map(n => (
+                      <div key={n.id} className={`px-4 py-3 border-b border-slate-50 flex gap-3 ${!n.read ? "bg-blue-50/50" : ""}`}>
+                        <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.type === "success" ? "bg-emerald-500" : n.type === "danger" ? "bg-red-500" : "bg-blue-500"}`}/>
+                        <div>
+                          <p className="text-xs text-slate-700 leading-relaxed">{n.message}</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">{fmtDate(n.timestamp)} · {fmtTime(n.timestamp)}</p>
+                        </div>
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* User */}
+          <div className="flex items-center gap-2 pl-3 border-l border-slate-100">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-xs font-black">
+              {currentUser.name.split(" ").map(w => w[0]).join("")}
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-xs font-bold text-slate-700 leading-none">{currentUser.name}</p>
+              <p className="text-[10px] text-slate-400">{currentUser.designation}</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* SIDEBAR */}
+        <aside className="w-56 bg-white border-r border-slate-100 flex-shrink-0 flex flex-col py-4 overflow-y-auto" style={{ minHeight: "calc(100vh - 57px)" }}>
+          <nav className="flex flex-col gap-1 px-3">
+            {navItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => setActiveModule(item.id)}
+                className={`nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm font-semibold ${activeModule === item.id ? "active" : "text-slate-600"}`}
+              >
+                <Icon name={item.icon} size={16}/>
+                {item.label}
+              </button>
+            ))}
+          </nav>
+          <div className="mt-auto px-3 pb-2">
+            <div className={`rounded-xl p-3 ${role === "compliance" ? "bg-blue-50 border border-blue-100" : "bg-amber-50 border border-amber-100"}`}>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Active Role</p>
+              <p className={`text-sm font-bold mt-0.5 ${role === "compliance" ? "text-blue-700" : "text-amber-700"}`}>
+                {role === "compliance" ? "🛡️ Compliance" : "⚡ Rating Team"}
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        {/* MAIN CONTENT */}
+        <main className="flex-1 overflow-y-auto p-6 animate-slideIn" key={activeModule + role}>
+          {activeModule === "dashboard" && <Dashboard role={role} upsiRecords={upsiRecords} preclearance={preclearance} trading={trading} auditLog={auditLog} users={USERS} companies={COMPANIES} currentUser={currentUser} setActiveModule={setActiveModule}/>}
+          {activeModule === "upsi" && <UpsiModule role={role} records={upsiRecords} setRecords={setUpsiRecords} companies={COMPANIES} users={USERS} currentUser={currentUser} addAudit={addAudit} addNotif={addNotif}/>}
+          {activeModule === "preclearance" && <PreclearanceModule role={role} records={preclearance} setRecords={setPreclearance} companies={COMPANIES} currentUser={currentUser} addAudit={addAudit} addNotif={addNotif} users={USERS}/>}
+          {activeModule === "trading" && <TradingModule role={role} records={trading} setRecords={setTrading} companies={COMPANIES} currentUser={currentUser} addAudit={addAudit}/>}
+          {activeModule === "audit" && <AuditModule log={auditLog} role={role}/>}
+          {activeModule === "companies" && <CompaniesModule companies={COMPANIES} role={role}/>}
+          {activeModule === "users" && <UsersModule users={USERS} role={role}/>}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════════════════════════════
+function Dashboard({ role, upsiRecords, preclearance, trading, auditLog, users, companies, currentUser, setActiveModule }) {
+  const myUpsi = role === "compliance" ? upsiRecords : upsiRecords.filter(r => r.createdBy === currentUser.id);
+  const myPre = role === "compliance" ? preclearance : preclearance.filter(r => r.createdBy === currentUser.id);
+  const myTrade = role === "compliance" ? trading : trading.filter(r => r.createdBy === currentUser.id);
+  const pending = preclearance.filter(r => r.status === "Pending");
+
+  const recentAudit = auditLog.slice(0, 5);
+
+  return (
+    <div className="space-y-6 animate-fadeUp">
+      <div>
+        <h2 className="text-xl font-black text-slate-800">
+          {role === "compliance" ? "Compliance Overview" : "My Dashboard"}
+        </h2>
+        <p className="text-sm text-slate-500 mt-0.5">
+          {role === "compliance" ? "Full visibility across all team activities" : `Welcome back, ${currentUser.name.split(" ")[0]} · ${new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}`}
+        </p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="UPSI Records" value={myUpsi.length} icon="upsi" color="blue" sub={`${myUpsi.filter(r => r.nature === "UPSI").length} flagged UPSI`}/>
+        <StatCard label="Pre-Clearances" value={myPre.length} icon="clearance" color="amber" sub={`${myPre.filter(r => r.status === "Pending").length} pending review`}/>
+        <StatCard label="Trade Disclosures" value={myTrade.length} icon="trading" color="green" sub="This period"/>
+        {role === "compliance"
+          ? <StatCard label="Pending Approvals" value={pending.length} icon="alert" color="red" sub="Require action"/>
+          : <StatCard label="Companies Tracked" value={companies.length} icon="company" color="purple" sub="Active entities"/>
+        }
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* UPSI breakdown */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-5 col-span-1">
+          <h3 className="font-bold text-slate-700 text-sm mb-4 flex items-center gap-2"><Icon name="upsi" size={14}/>UPSI Breakdown</h3>
+          <div className="space-y-3">
+            {["Financial Results","Mergers & Acquisitions","Board Decisions","Regulatory Orders","Operational Update"].map(cat => {
+              const count = myUpsi.filter(r => r.category === cat).length;
+              const total = myUpsi.length || 1;
+              return (
+                <div key={cat}>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-slate-600 font-medium">{cat}</span>
+                    <span className="text-slate-400">{count}</span>
+                  </div>
+                  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${(count / total) * 100}%` }}/>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Pre-clearance status */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-5 col-span-1">
+          <h3 className="font-bold text-slate-700 text-sm mb-4 flex items-center gap-2"><Icon name="clearance" size={14}/>Pre-Clearance Status</h3>
+          {["Approved","Rejected","Pending"].map(s => {
+            const count = myPre.filter(r => r.status === s).length;
+            const colors = { Approved: "emerald", Rejected: "red", Pending: "amber" };
+            const bg = { Approved: "#10b981", Rejected: "#ef4444", Pending: "#f59e0b" };
+            return (
+              <div key={s} className="flex items-center gap-3 mb-3">
+                <div className="w-3 h-3 rounded-full" style={{ background: bg[s] }}/>
+                <span className="text-sm text-slate-600 flex-1">{s}</span>
+                <span className="text-sm font-bold text-slate-700">{count}</span>
+                <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${(count / (myPre.length || 1)) * 100}%`, background: bg[s] }}/>
+                </div>
+              </div>
+            );
+          })}
+          {role === "compliance" && pending.length > 0 && (
+            <button onClick={() => setActiveModule("preclearance")} className="mt-3 w-full py-2 bg-amber-50 text-amber-700 font-semibold text-xs rounded-xl border border-amber-100 hover:bg-amber-100 transition-colors">
+              Review {pending.length} pending →
+            </button>
+          )}
+        </div>
+
+        {/* Recent Audit */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-5 col-span-1">
+          <h3 className="font-bold text-slate-700 text-sm mb-4 flex items-center gap-2"><Icon name="audit" size={14}/>Recent Activity</h3>
+          <div className="space-y-3">
+            {recentAudit.map(log => (
+              <div key={log.id} className="flex gap-2.5">
+                <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[9px] font-black text-blue-600">{log.userName.split(" ").map(w => w[0]).join("")}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-slate-700 leading-snug truncate">{log.details}</p>
+                  <p className="text-[10px] text-slate-400">{fmtDate(log.timestamp)}</p>
+                </div>
+                <Badge text={log.action}/>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Company overview */}
+      <div className="bg-white rounded-2xl border border-slate-100 p-5">
+        <h3 className="font-bold text-slate-700 text-sm mb-4 flex items-center gap-2"><Icon name="building" size={14}/>Companies under Coverage</h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {COMPANIES.map(c => (
+            <div key={c.id} className="rounded-xl border border-slate-100 p-3 hover:border-blue-200 hover:bg-blue-50/30 transition-all cursor-pointer">
+              <p className="font-bold text-slate-700 text-sm truncate">{c.name}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{c.cin}</p>
+              <div className="flex items-center gap-1.5 mt-2">
+                <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">{c.sector}</span>
+                <span className="text-[10px] text-slate-400">{upsiRecords.filter(r => r.companyId === c.id).length} records</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  UPSI MODULE
+// ═══════════════════════════════════════════════════════════════════════════════
+function UpsiModule({ role, records, setRecords, companies, users, currentUser, addAudit, addNotif }) {
+  const [showForm, setShowForm] = useState(false);
+  const [viewRecord, setViewRecord] = useState(null);
+  const [filter, setFilter] = useState({ nature: "", severity: "", companyId: "" });
+
+  const visible = role === "compliance" ? records : records.filter(r => r.createdBy === currentUser.id);
+  const filtered = visible.filter(r =>
+    (!filter.nature || r.nature === filter.nature) &&
+    (!filter.severity || r.severity === filter.severity) &&
+    (!filter.companyId || r.companyId === Number(filter.companyId))
+  );
+
+  const handleCreate = (data) => {
+    const rec = { ...data, id: generateId(), createdBy: currentUser.id, createdAt: now() };
+    setRecords(prev => [rec, ...prev]);
+    addAudit("CREATE", "UPSI", rec.id, `Created UPSI record for ${companies.find(c => c.id === Number(rec.companyId))?.name}`);
+    addNotif(currentUser.id, `UPSI record created for ${companies.find(c => c.id === Number(rec.companyId))?.name}`, "info");
+    if (role !== "compliance") users.filter(u => u.role === "compliance").forEach(u => addNotif(u.id, `New UPSI record by ${currentUser.name}`, "info"));
+    setShowForm(false);
+  };
+
+  return (
+    <div className="space-y-5 animate-fadeUp">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-black text-slate-800">UPSI Records</h2>
+          <p className="text-sm text-slate-500">{role === "compliance" ? "All team records" : "Your submitted records"}</p>
+        </div>
+        {role === "rating" && (
+          <button onClick={() => setShowForm(true)} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm">
+            <Icon name="plus" size={15} color="white"/>New Record
+          </button>
+        )}
+      </div>
+
+      {/* Filters */}
+      <div className="flex gap-3 flex-wrap">
+        <Select value={filter.nature} onChange={e => setFilter(p => ({...p, nature: e.target.value}))} style={{width:140}}>
+          <option value="">All Nature</option><option>UPSI</option><option>Non-UPSI</option>
+        </Select>
+        <Select value={filter.severity} onChange={e => setFilter(p => ({...p, severity: e.target.value}))} style={{width:140}}>
+          <option value="">All Severity</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
+        </Select>
+        <Select value={filter.companyId} onChange={e => setFilter(p => ({...p, companyId: e.target.value}))} style={{width:200}}>
+          <option value="">All Companies</option>
+          {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </Select>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table>
+            <thead><tr className="border-b border-slate-100">
+              {["Company","Nature","Period","Category","Severity","Source","Time","Mode","Actions"].map(h => (
+                <th key={h} className="px-4 py-3 text-left">{h}</th>
+              ))}
+            </tr></thead>
+            <tbody>
+              {filtered.length === 0 && <tr><td colSpan={9} className="text-center py-12 text-slate-400 text-sm">No records found</td></tr>}
+              {filtered.map(r => {
+                const co = companies.find(c => c.id === r.companyId);
+                const periodLabel = r.period === "Quarterly" ? `Q${r.quarter} ${r.year}` : r.period === "Monthly" ? `${r.month}/${r.year}` : r.year;
+                return (
+                  <tr key={r.id} className="border-b border-slate-50">
+                    <td className="px-4 py-3 font-semibold text-slate-700">{co?.name}</td>
+                    <td className="px-4 py-3"><Badge text={r.nature}/></td>
+                    <td className="px-4 py-3 text-slate-500 text-xs">{r.period}<br/><span className="font-semibold text-slate-700">{periodLabel}</span></td>
+                    <td className="px-4 py-3">{r.category}</td>
+                    <td className="px-4 py-3"><Badge text={r.severity}/></td>
+                    <td className="px-4 py-3 text-xs">{r.source.name}<br/><span className="text-slate-400">{r.source.from}</span></td>
+                    <td className="px-4 py-3 text-xs text-slate-500">{fmtDate(r.time)}<br/>{fmtTime(r.time)}</td>
+                    <td className="px-4 py-3"><span className="text-xs bg-slate-100 px-2 py-1 rounded-full">{r.mode}</span></td>
+                    <td className="px-4 py-3">
+                      <button onClick={() => { setViewRecord(r); addAudit("VIEW","UPSI",r.id,`Viewed UPSI record ${r.id}`); }} className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-500"><Icon name="eye" size={15}/></button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {showForm && <UpsiForm companies={companies} users={users} onSave={handleCreate} onClose={() => setShowForm(false)}/>}
+      {viewRecord && <UpsiViewModal record={viewRecord} companies={companies} users={users} onClose={() => setViewRecord(null)}/>}
+    </div>
+  );
+}
+
+function UpsiForm({ companies, users, onSave, onClose }) {
+  const [d, setD] = useState({ companyId: "", nature: "UPSI", period: "Quarterly", quarter: "Q1", month: "01", year: "2024", category: "", severity: "High", source: { name: "", phone: "", email: "", pan: "", designation: "", from: "" }, time: "", mode: "Email", receivers: [] });
+  const set = (k, v) => setD(p => ({...p, [k]: v}));
+  const setSrc = (k, v) => setD(p => ({...p, source: {...p.source, [k]: v}}));
+
+  const handleSubmit = () => {
+    if (!d.companyId || !d.category || !d.source.name) return alert("Please fill required fields");
+    onSave(d);
+  };
+
+  return (
+    <Modal title="New UPSI Record" onClose={onClose} size="lg">
+      <div className="grid grid-cols-2 gap-4">
+        <Field label="Company" required>
+          <Select value={d.companyId} onChange={e => set("companyId", e.target.value)}>
+            <option value="">Select company...</option>
+            {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </Select>
+        </Field>
+        <Field label="Nature" required>
+          <Select value={d.nature} onChange={e => set("nature", e.target.value)}>
+            <option>UPSI</option><option>Non-UPSI</option>
+          </Select>
+        </Field>
+        <Field label="Period" required>
+          <Select value={d.period} onChange={e => set("period", e.target.value)}>
+            <option>Quarterly</option><option>Monthly</option><option>Annually</option>
+          </Select>
+        </Field>
+        {d.period === "Quarterly" && <Field label="Quarter" required>
+          <Select value={d.quarter} onChange={e => set("quarter", e.target.value)}>
+            <option>Q1</option><option>Q2</option><option>Q3</option><option>Q4</option>
+          </Select>
+        </Field>}
+        {d.period === "Monthly" && <Field label="Month" required>
+          <Select value={d.month} onChange={e => set("month", e.target.value)}>
+            {["01","02","03","04","05","06","07","08","09","10","11","12"].map(m => <option key={m} value={m}>{new Date(2024,+m-1).toLocaleString("en",{month:"long"})}</option>)}
+          </Select>
+        </Field>}
+        <Field label="Year" required>
+          <Select value={d.year} onChange={e => set("year", e.target.value)}>
+            {["2022","2023","2024","2025"].map(y => <option key={y}>{y}</option>)}
+          </Select>
+        </Field>
+        <Field label="Category" required>
+          <Select value={d.category} onChange={e => set("category", e.target.value)}>
+            <option value="">Select...</option>
+            {["Financial Results","Mergers & Acquisitions","Board Decisions","Regulatory Orders","Dividend","Buyback","Fund Raising","Operational Update"].map(c => <option key={c}>{c}</option>)}
+          </Select>
+        </Field>
+        <Field label="Severity" required>
+          <Select value={d.severity} onChange={e => set("severity", e.target.value)}>
+            <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
+          </Select>
+        </Field>
+      </div>
+
+      <div className="mt-5 pt-4 border-t border-slate-100">
+        <p className="text-xs font-black uppercase tracking-wider text-slate-500 mb-3">Source Details</p>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Name" required><Input value={d.source.name} onChange={e => setSrc("name", e.target.value)} placeholder="Full name"/></Field>
+          <Field label="Phone"><Input value={d.source.phone} onChange={e => setSrc("phone", e.target.value)} placeholder="10-digit mobile"/></Field>
+          <Field label="Email"><Input value={d.source.email} onChange={e => setSrc("email", e.target.value)} placeholder="email@company.com" type="email"/></Field>
+          <Field label="PAN"><Input value={d.source.pan} onChange={e => setSrc("pan", e.target.value)} placeholder="ABCDE1234F"/></Field>
+          <Field label="Designation"><Input value={d.source.designation} onChange={e => setSrc("designation", e.target.value)} placeholder="Job title"/></Field>
+          <Field label="Source From" required>
+            <Select value={d.source.from} onChange={e => setSrc("from", e.target.value)}>
+              <option value="">Select...</option>
+              {["Email","Phone Call","Meeting","WhatsApp","Official Announcement","Regulatory Filing","News","Other"].map(s => <option key={s}>{s}</option>)}
+            </Select>
+          </Field>
+        </div>
+      </div>
+
+      <div className="mt-5 pt-4 border-t border-slate-100">
+        <p className="text-xs font-black uppercase tracking-wider text-slate-500 mb-3">Dissemination Details</p>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Time of Receipt" required><Input type="datetime-local" value={d.time} onChange={e => set("time", e.target.value)}/></Field>
+          <Field label="Mode" required>
+            <Select value={d.mode} onChange={e => set("mode", e.target.value)}>
+              {["Email","Phone Call","Meeting","WhatsApp","Official Release","Other"].map(m => <option key={m}>{m}</option>)}
+            </Select>
+          </Field>
+          <Field label="Receivers" hint="Select all employees who received this information">
+            <select multiple className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-24" value={d.receivers.map(String)} onChange={e => set("receivers", Array.from(e.target.selectedOptions, o => Number(o.value)))}>
+              {users.map(u => <option key={u.id} value={u.id}>{u.name} ({u.designation})</option>)}
+            </select>
+          </Field>
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-3 mt-5 pt-4 border-t border-slate-100">
+        <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors">Cancel</button>
+        <button onClick={handleSubmit} className="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors">Save Record</button>
+      </div>
+    </Modal>
+  );
+}
+
+function UpsiViewModal({ record: r, companies, users, onClose }) {
+  const co = companies.find(c => c.id === r.companyId);
+  return (
+    <Modal title="UPSI Record Details" onClose={onClose} size="md">
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-3">
+          {[["Company", co?.name],["Nature", r.nature],["Period", r.period],["Quarter/Month", r.quarter || r.month || "-"],["Year", r.year],["Category", r.category],["Severity", r.severity],["Mode", r.mode],["Time", `${fmtDate(r.time)} ${fmtTime(r.time)}`]].map(([k,v]) => (
+            <div key={k} className="rounded-xl bg-slate-50 p-3">
+              <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{k}</p>
+              <p className="text-sm font-semibold text-slate-700 mt-0.5">{k==="Severity"||k==="Nature"?<Badge text={v}/>:v}</p>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-xl bg-slate-50 p-3">
+          <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Source</p>
+          <div className="grid grid-cols-2 gap-2">
+            {[["Name",r.source.name],["Phone",r.source.phone],["Email",r.source.email],["PAN",r.source.pan],["Designation",r.source.designation],["Source From",r.source.from]].map(([k,v]) => (
+              <div key={k}><span className="text-xs text-slate-400">{k}: </span><span className="text-xs font-semibold text-slate-700">{v||"-"}</span></div>
+            ))}
+          </div>
+        </div>
+        {r.receivers?.length > 0 && (
+          <div className="rounded-xl bg-slate-50 p-3">
+            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Receivers ({r.receivers.length})</p>
+            <div className="flex flex-wrap gap-2">
+              {r.receivers.map(uid => { const u = users.find(u => u.id === uid); return u ? <span key={uid} className="text-xs bg-white border border-slate-200 rounded-full px-3 py-1 font-medium">{u.name}</span> : null; })}
+            </div>
+          </div>
+        )}
+      </div>
+    </Modal>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  PRE-CLEARANCE MODULE
+// ═══════════════════════════════════════════════════════════════════════════════
+function PreclearanceModule({ role, records, setRecords, companies, currentUser, addAudit, addNotif, users }) {
+  const [showForm, setShowForm] = useState(false);
+  const [reviewModal, setReviewModal] = useState(null);
+
+  const visible = role === "compliance" ? records : records.filter(r => r.createdBy === currentUser.id);
+
+  const handleCreate = (data) => {
+    const rec = { ...data, id: generateId(), status: "Pending", createdBy: currentUser.id, createdAt: now(), reviewedBy: null, reviewedAt: null, remarks: "" };
+    setRecords(prev => [rec, ...prev]);
+    addAudit("CREATE","Pre-Clearance",rec.id,`New pre-clearance request submitted by ${currentUser.name}`);
+    users.filter(u => u.role === "compliance").forEach(u => addNotif(u.id, `New pre-clearance request from ${currentUser.name}`, "info"));
+    setShowForm(false);
+  };
+
+  const handleReview = (id, status, remarks) => {
+    setRecords(prev => prev.map(r => r.id === id ? { ...r, status, remarks, reviewedBy: currentUser.id, reviewedAt: now() } : r));
+    const rec = records.find(r => r.id === id);
+    addAudit(status.toUpperCase(),"Pre-Clearance",id,`${status} pre-clearance for request ${id}`);
+    addNotif(rec.createdBy, `Your pre-clearance request has been ${status.toLowerCase()}. ${remarks ? `Remarks: ${remarks}` : ""}`, status === "Approved" ? "success" : "danger");
+    setReviewModal(null);
+  };
+
+  return (
+    <div className="space-y-5 animate-fadeUp">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-black text-slate-800">Pre-Clearance Requests</h2>
+          <p className="text-sm text-slate-500">{role === "compliance" ? "Review and approve/reject requests" : "Your clearance requests"}</p>
+        </div>
+        {role === "rating" && (
+          <button onClick={() => setShowForm(true)} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm">
+            <Icon name="plus" size={15} color="white"/>New Request
+          </button>
+        )}
+      </div>
+
+      {role === "compliance" && (
+        <div className="flex gap-3">
+          {["Pending","Approved","Rejected"].map(s => {
+            const count = records.filter(r => r.status === s).length;
+            const colors = { Pending: "amber", Approved: "green", Rejected: "red" };
+            return <StatCard key={s} label={s} value={count} icon="clearance" color={colors[s]} />;
+          })}
+        </div>
+      )}
+
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table>
+            <thead><tr className="border-b border-slate-100">
+              {["Company","CIN","Qty","Exp. Date","Description","Status","Submitted By","Actions"].map(h => (
+                <th key={h} className="px-4 py-3 text-left">{h}</th>
+              ))}
+            </tr></thead>
+            <tbody>
+              {visible.length === 0 && <tr><td colSpan={8} className="text-center py-12 text-slate-400 text-sm">No requests found</td></tr>}
+              {visible.map(r => {
+                const co = companies.find(c => c.id === r.companyId);
+                const creator = users.find(u => u.id === r.createdBy);
+                return (
+                  <tr key={r.id} className="border-b border-slate-50">
+                    <td className="px-4 py-3 font-semibold text-slate-700">{co?.name}</td>
+                    <td className="px-4 py-3 text-xs font-mono text-slate-500">{r.cin}</td>
+                    <td className="px-4 py-3 font-semibold">{r.qty.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-sm">{fmtDate(r.expDate)}</td>
+                    <td className="px-4 py-3 max-w-xs text-xs text-slate-600 truncate">{r.description}</td>
+                    <td className="px-4 py-3"><Badge text={r.status}/></td>
+                    <td className="px-4 py-3 text-xs">{creator?.name}</td>
+                    <td className="px-4 py-3 flex gap-1">
+                      {role === "compliance" && r.status === "Pending" && (
+                        <button onClick={() => setReviewModal(r)} className="px-3 py-1 rounded-lg bg-blue-50 text-blue-600 text-xs font-bold hover:bg-blue-100 transition-colors">Review</button>
+                      )}
+                      {r.status !== "Pending" && r.remarks && (
+                        <span className="text-[10px] text-slate-400 italic">{r.remarks}</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {showForm && <PreclearanceForm companies={companies} onSave={handleCreate} onClose={() => setShowForm(false)}/>}
+      {reviewModal && <ReviewModal record={reviewModal} companies={companies} users={users} onReview={handleReview} onClose={() => setReviewModal(null)}/>}
+    </div>
+  );
+}
+
+function PreclearanceForm({ companies, onSave, onClose }) {
+  const [d, setD] = useState({ companyId: "", cin: "", qty: "", expDate: "", description: "" });
+  const set = (k, v) => setD(p => ({...p, [k]: v}));
+
+  const handleCompany = (id) => {
+    const co = companies.find(c => c.id === Number(id));
+    setD(p => ({ ...p, companyId: id, cin: co?.cin || "" }));
+  };
+
+  return (
+    <Modal title="New Pre-Clearance Request" onClose={onClose} size="sm">
+      <div className="space-y-4">
+        <Field label="Company" required>
+          <Select value={d.companyId} onChange={e => handleCompany(e.target.value)}>
+            <option value="">Select company...</option>
+            {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </Select>
+        </Field>
+        <Field label="CIN"><Input value={d.cin} readOnly className="bg-slate-50" placeholder="Auto-filled"/></Field>
+        <Field label="Quantity" required><Input type="number" value={d.qty} onChange={e => set("qty", e.target.value)} placeholder="No. of shares/units"/></Field>
+        <Field label="Expected Transaction Date" required><Input type="date" value={d.expDate} onChange={e => set("expDate", e.target.value)}/></Field>
+        <Field label="Description" required><Textarea value={d.description} onChange={e => set("description", e.target.value)} placeholder="Purpose of transaction..."/></Field>
+      </div>
+      <div className="flex justify-end gap-3 mt-5 pt-4 border-t border-slate-100">
+        <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Cancel</button>
+        <button onClick={() => { if(!d.companyId||!d.qty||!d.expDate) return alert("Fill required fields"); onSave(d); }} className="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700">Submit Request</button>
+      </div>
+    </Modal>
+  );
+}
+
+function ReviewModal({ record: r, companies, users, onReview, onClose }) {
+  const [remarks, setRemarks] = useState("");
+  const co = companies.find(c => c.id === r.companyId);
+  const creator = users.find(u => u.id === r.createdBy);
+  return (
+    <Modal title="Review Pre-Clearance Request" onClose={onClose} size="sm">
+      <div className="space-y-3 mb-5">
+        {[["Company", co?.name],["CIN", r.cin],["Quantity", r.qty.toLocaleString()],["Expected Date", fmtDate(r.expDate)],["Submitted By", creator?.name],["Description", r.description]].map(([k,v]) => (
+          <div key={k} className="flex justify-between text-sm border-b border-slate-50 pb-2">
+            <span className="text-slate-500">{k}</span>
+            <span className="font-semibold text-slate-700 text-right max-w-[60%]">{v}</span>
+          </div>
+        ))}
+      </div>
+      <Field label="Remarks"><Textarea value={remarks} onChange={e => setRemarks(e.target.value)} placeholder="Add remarks (optional)..."/></Field>
+      <div className="flex gap-3 mt-5 pt-4 border-t border-slate-100">
+        <button onClick={() => onReview(r.id, "Rejected", remarks)} className="flex-1 py-2 rounded-xl bg-red-50 text-red-700 font-bold text-sm border border-red-100 hover:bg-red-100 flex items-center justify-center gap-2">
+          <Icon name="x" size={14}/>Reject
+        </button>
+        <button onClick={() => onReview(r.id, "Approved", remarks)} className="flex-1 py-2 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 flex items-center justify-center gap-2">
+          <Icon name="check" size={14} color="white"/>Approve
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  TRADING DISCLOSURE
+// ═══════════════════════════════════════════════════════════════════════════════
+function TradingModule({ role, records, setRecords, companies, currentUser, addAudit }) {
+  const [showForm, setShowForm] = useState(false);
+  const [typeFilter, setTypeFilter] = useState("");
+
+  const visible = role === "compliance" ? records : records.filter(r => r.createdBy === currentUser.id);
+  const filtered = visible.filter(r => !typeFilter || r.type === typeFilter);
+
+  const handleCreate = (data) => {
+    const rec = { ...data, id: generateId(), createdBy: currentUser.id, createdAt: now() };
+    setRecords(prev => [rec, ...prev]);
+    addAudit("CREATE","Trading",rec.id,`New ${rec.type} trade disclosure by ${currentUser.name}`);
+    setShowForm(false);
+  };
+
+  return (
+    <div className="space-y-5 animate-fadeUp">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-black text-slate-800">Trading Disclosures</h2>
+          <p className="text-sm text-slate-500">Equity, Mutual Funds, F&O and other instruments</p>
+        </div>
+        {role === "rating" && (
+          <button onClick={() => setShowForm(true)} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-sm">
+            <Icon name="plus" size={15} color="white"/>New Disclosure
+          </button>
+        )}
+      </div>
+
+      <div className="flex gap-3">
+        {["","Equity","Mutual Fund","F&O","Bond","ETF"].map(t => (
+          <button key={t} onClick={() => setTypeFilter(t)} className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${typeFilter === t ? "bg-blue-600 text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+            {t || "All"}
+          </button>
+        ))}
+      </div>
+
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table>
+            <thead><tr className="border-b border-slate-100">
+              {["Company","Type","Details","Amount","Date","Description","Date Added"].map(h => (
+                <th key={h} className="px-4 py-3 text-left">{h}</th>
+              ))}
+            </tr></thead>
+            <tbody>
+              {filtered.length === 0 && <tr><td colSpan={7} className="text-center py-12 text-slate-400 text-sm">No disclosures found</td></tr>}
+              {filtered.map(r => {
+                const co = companies.find(c => c.id === r.companyId);
+                const details = r.type === "Equity" ? `${r.qty?.toLocaleString()} shares @ ₹${r.price}`
+                  : r.type === "Mutual Fund" ? `${r.fundHouse} · NAV ₹${r.nav}`
+                  : r.type === "F&O" ? `${r.underlying} · Open: ${r.openPosition} / Close: ${r.closePosition}`
+                  : r.qty ? `Qty: ${r.qty}` : "-";
+                return (
+                  <tr key={r.id} className="border-b border-slate-50">
+                    <td className="px-4 py-3 font-semibold text-slate-700">{co?.name}</td>
+                    <td className="px-4 py-3"><Badge text={r.type}/></td>
+                    <td className="px-4 py-3 text-xs text-slate-600">{details}</td>
+                    <td className="px-4 py-3 font-semibold text-slate-700">₹{r.amount?.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-sm text-slate-500">{fmtDate(r.date)}</td>
+                    <td className="px-4 py-3 text-xs text-slate-500 max-w-[150px] truncate">{r.description}</td>
+                    <td className="px-4 py-3 text-xs text-slate-400">{fmtDate(r.createdAt)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {showForm && <TradingForm companies={companies} onSave={handleCreate} onClose={() => setShowForm(false)}/>}
+    </div>
+  );
+}
+
+function TradingForm({ companies, onSave, onClose }) {
+  const [d, setD] = useState({ companyId: "", type: "Equity", date: "", amount: "", description: "", qty: "", price: "", fundHouse: "", nav: "", openPosition: "", closePosition: "", underlying: "", expiry: "" });
+  const set = (k, v) => setD(p => ({...p, [k]: v}));
+
+  return (
+    <Modal title="New Trading Disclosure" onClose={onClose} size="md">
+      <div className="grid grid-cols-2 gap-4">
+        <Field label="Company" required>
+          <Select value={d.companyId} onChange={e => set("companyId", e.target.value)}>
+            <option value="">Select company...</option>
+            {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </Select>
+        </Field>
+        <Field label="Instrument Type" required>
+          <Select value={d.type} onChange={e => set("type", e.target.value)}>
+            {["Equity","Mutual Fund","F&O","Bond","ETF","Debenture"].map(t => <option key={t}>{t}</option>)}
+          </Select>
+        </Field>
+        <Field label="Transaction Date" required><Input type="date" value={d.date} onChange={e => set("date", e.target.value)}/></Field>
+        <Field label="Amount (₹)" required><Input type="number" value={d.amount} onChange={e => set("amount", e.target.value)} placeholder="0.00"/></Field>
+
+        {d.type === "Equity" && <>
+          <Field label="Quantity"><Input type="number" value={d.qty} onChange={e => set("qty", e.target.value)} placeholder="No. of shares"/></Field>
+          <Field label="Price per Share"><Input type="number" value={d.price} onChange={e => set("price", e.target.value)} placeholder="₹"/></Field>
+        </>}
+        {d.type === "Mutual Fund" && <>
+          <Field label="Fund House"><Input value={d.fundHouse} onChange={e => set("fundHouse", e.target.value)} placeholder="e.g. SBI MF, HDFC MF"/></Field>
+          <Field label="NAV"><Input type="number" value={d.nav} onChange={e => set("nav", e.target.value)} placeholder="Net Asset Value"/></Field>
+        </>}
+        {d.type === "F&O" && <>
+          <Field label="Underlying Asset"><Input value={d.underlying} onChange={e => set("underlying", e.target.value)} placeholder="e.g. NIFTY, RELIANCE"/></Field>
+          <Field label="Expiry Date"><Input type="date" value={d.expiry} onChange={e => set("expiry", e.target.value)}/></Field>
+          <Field label="Open Position"><Input type="number" value={d.openPosition} onChange={e => set("openPosition", e.target.value)} placeholder="Lots/contracts"/></Field>
+          <Field label="Close Position"><Input type="number" value={d.closePosition} onChange={e => set("closePosition", e.target.value)} placeholder="Lots/contracts"/></Field>
+        </>}
+        <div className="col-span-2">
+          <Field label="Description"><Textarea value={d.description} onChange={e => set("description", e.target.value)} placeholder="Additional details..."/></Field>
+        </div>
+      </div>
+      <div className="flex justify-end gap-3 mt-5 pt-4 border-t border-slate-100">
+        <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Cancel</button>
+        <button onClick={() => { if(!d.companyId||!d.amount||!d.date) return alert("Fill required fields"); onSave(d); }} className="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700">Save Disclosure</button>
+      </div>
+    </Modal>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  AUDIT LOG
+// ═══════════════════════════════════════════════════════════════════════════════
+function AuditModule({ log, role }) {
+  const [filter, setFilter] = useState({ module: "", action: "" });
+  const filtered = log.filter(l =>
+    (!filter.module || l.module === filter.module) &&
+    (!filter.action || l.action === filter.action)
+  );
+
+  const actionColors = { CREATE: "blue", UPDATE: "warning", DELETE: "danger", VIEW: "default", APPROVE: "success", REJECT: "danger" };
+
+  return (
+    <div className="space-y-5 animate-fadeUp">
+      <div>
+        <h2 className="text-xl font-black text-slate-800">Audit Log</h2>
+        <p className="text-sm text-slate-500">Complete activity trail across all modules</p>
+      </div>
+
+      <div className="flex gap-3">
+        <Select value={filter.module} onChange={e => setFilter(p => ({...p, module: e.target.value}))} style={{width:180}}>
+          <option value="">All Modules</option>
+          {["UPSI","Pre-Clearance","Trading","Companies","Users"].map(m => <option key={m}>{m}</option>)}
+        </Select>
+        <Select value={filter.action} onChange={e => setFilter(p => ({...p, action: e.target.value}))} style={{width:160}}>
+          <option value="">All Actions</option>
+          {["CREATE","UPDATE","DELETE","VIEW","APPROVE","REJECT"].map(a => <option key={a}>{a}</option>)}
+        </Select>
+        <span className="text-xs text-slate-400 self-center">{filtered.length} entries</span>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table>
+            <thead><tr className="border-b border-slate-100">
+              {["Timestamp","User","Action","Module","Record ID","Details"].map(h => (
+                <th key={h} className="px-4 py-3 text-left">{h}</th>
+              ))}
+            </tr></thead>
+            <tbody>
+              {filtered.length === 0 && <tr><td colSpan={6} className="text-center py-12 text-slate-400 text-sm">No audit entries found</td></tr>}
+              {filtered.map(l => (
+                <tr key={l.id} className="border-b border-slate-50">
+                  <td className="px-4 py-3 text-xs text-slate-500 font-mono whitespace-nowrap">{fmtDate(l.timestamp)}<br/>{fmtTime(l.timestamp)}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center">
+                        <span className="text-[9px] font-black text-blue-600">{l.userName.split(" ").map(w=>w[0]).join("")}</span>
+                      </div>
+                      <span className="text-xs font-semibold text-slate-700">{l.userName}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3"><Badge text={l.action} type={actionColors[l.action]}/></td>
+                  <td className="px-4 py-3 text-xs font-semibold text-slate-600">{l.module}</td>
+                  <td className="px-4 py-3 text-xs font-mono text-slate-400">{l.recordId}</td>
+                  <td className="px-4 py-3 text-xs text-slate-600 max-w-xs">{l.details}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  COMPANIES MODULE
+// ═══════════════════════════════════════════════════════════════════════════════
+function CompaniesModule({ companies, role }) {
+  return (
+    <div className="space-y-5 animate-fadeUp">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-black text-slate-800">Company Registry</h2>
+          <p className="text-sm text-slate-500">{companies.length} companies under coverage</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {companies.map(c => (
+          <div key={c.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:border-blue-200 hover:shadow-md transition-all">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="font-black text-slate-800">{c.name}</h3>
+                <p className="text-xs font-mono text-slate-400 mt-1">CIN: {c.cin}</p>
+              </div>
+              <span className="text-xs bg-blue-50 text-blue-700 border border-blue-100 px-3 py-1 rounded-full font-semibold">{c.sector}</span>
+            </div>
+            <div className="flex gap-3 mt-4 pt-4 border-t border-slate-50">
+              <div className="text-center">
+                <p className="text-xs text-slate-400">UPSI Records</p>
+                <p className="font-black text-slate-700 text-lg">—</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xs text-slate-400">Pre-Clearances</p>
+                <p className="font-black text-slate-700 text-lg">—</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  USERS MODULE
+// ═══════════════════════════════════════════════════════════════════════════════
+function UsersModule({ users, role }) {
+  return (
+    <div className="space-y-5 animate-fadeUp">
+      <div>
+        <h2 className="text-xl font-black text-slate-800">Users & Receivers</h2>
+        <p className="text-sm text-slate-500">{users.length} registered users</p>
+      </div>
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <table>
+          <thead><tr className="border-b border-slate-100">
+            {["Name","Email","Phone","PAN","Designation","Department","Role"].map(h => (
+              <th key={h} className="px-4 py-3 text-left">{h}</th>
+            ))}
+          </tr></thead>
+          <tbody>
+            {users.map(u => (
+              <tr key={u.id} className="border-b border-slate-50">
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-xs font-black">
+                      {u.name.split(" ").map(w=>w[0]).join("")}
+                    </div>
+                    <span className="font-semibold text-slate-700">{u.name}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-xs text-slate-500">{u.email}</td>
+                <td className="px-4 py-3 text-xs text-slate-500">{u.phone}</td>
+                <td className="px-4 py-3 text-xs font-mono text-slate-500">{u.pan}</td>
+                <td className="px-4 py-3 text-sm">{u.designation}</td>
+                <td className="px-4 py-3"><span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">{u.dept}</span></td>
+                <td className="px-4 py-3">
+                  <Badge text={u.role === "compliance" ? "Compliance" : "Rating"} type={u.role === "compliance" ? "info" : "warning"}/>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
