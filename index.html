@@ -23,8 +23,6 @@
   --text:  #1e293b;
 }
 body{font-family:'DM Sans',sans-serif;background:#f1f5f9;color:var(--text);min-height:100vh;overflow-x:hidden}
-
-/* SCROLLBAR */
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:#f1f5f9}
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
@@ -131,16 +129,16 @@ tbody tr:last-child td{border-bottom:none}
 .tab-btn:hover{background:#f8fafc}
 .tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
 
-/* ═══════════════════════════ MODAL ═══════════════════════════ */
+/* MODAL */
 .modal-overlay{
   position:fixed;inset:0;z-index:1000;
   background:rgba(15,23,42,.65);
   backdrop-filter:blur(4px);
   display:none;
-  align-items:flex-start;       /* start so it can scroll */
+  align-items:flex-start;
   justify-content:center;
   padding:30px 16px;
-  overflow-y:auto;              /* overlay scrolls */
+  overflow-y:auto;
 }
 .modal-overlay.open{display:flex}
 .modal-box{
@@ -152,7 +150,7 @@ tbody tr:last-child td{border-bottom:none}
   display:flex;
   flex-direction:column;
   animation:fadeUp .22s ease;
-  flex-shrink:0;                /* don't shrink — let overlay scroll */
+  flex-shrink:0;
 }
 .modal-box.sm{max-width:480px}
 .modal-box.lg{max-width:900px}
@@ -169,7 +167,7 @@ tbody tr:last-child td{border-bottom:none}
   color:#94a3b8;transition:.15s;font-size:18px;line-height:1;font-weight:300;
 }
 .modal-close:hover{background:#f1f5f9;color:#475569}
-.modal-body{padding:20px 22px;overflow-y:visible}  /* body does NOT scroll — overlay does */
+.modal-body{padding:20px 22px;overflow-y:visible}
 .modal-foot{
   padding:14px 22px;border-top:1px solid #f1f5f9;
   display:flex;justify-content:flex-end;gap:10px;
@@ -191,21 +189,31 @@ textarea.form-control{resize:vertical;min-height:72px}
 .form-hint{font-size:10px;color:#94a3b8}
 .form-section{margin-top:18px;padding-top:16px;border-top:1px solid #f1f5f9}
 .form-section-title{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:12px}
-.multi-select{font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid #e2e8f0;border-radius:9px;background:#fff;color:#1e293b;outline:none;width:100%;padding:4px}
-.multi-select:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(37,99,235,.1)}
-.multi-select option{padding:5px 8px;border-radius:5px}
 
-/* DASHBOARD GRID */
-.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px}
-.dash-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:16px}
-.dash-card.full{grid-column:1/-1}
-.dash-card.half2{grid-column:span 2}
-.progress-row{margin-bottom:10px}
-.progress-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
-.progress-bar-bg{height:5px;background:#f1f5f9;border-radius:10px;overflow:hidden}
-.progress-bar{height:100%;border-radius:10px;background:var(--blue);transition:.4s}
+/* CHECKBOX MULTI-SELECT */
+.checkbox-group{border:1px solid #e2e8f0;border-radius:9px;background:#fff;max-height:160px;overflow-y:auto;padding:6px}
+.checkbox-group:focus-within{border-color:var(--blue);box-shadow:0 0 0 2px rgba(37,99,235,.1)}
+.checkbox-item{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;cursor:pointer;transition:.12s}
+.checkbox-item:hover{background:#f1f5f9}
+.checkbox-item input[type=checkbox]{width:15px;height:15px;accent-color:var(--blue);cursor:pointer;flex-shrink:0}
+.checkbox-item label{font-size:12.5px;font-weight:600;color:#334155;cursor:pointer;line-height:1.3}
+.checkbox-item label span{display:block;font-size:10px;color:#94a3b8;font-weight:500}
 
-/* NOTIFICATION DROPDOWN */
+/* INLINE CREATE COMPANY PANEL */
+.inline-create-panel{background:#f8fafc;border:1px dashed #bfdbfe;border-radius:12px;padding:14px;margin-top:10px;animation:fadeUp .2s ease}
+.inline-create-title{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#2563eb;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+
+/* COMPANY CARDS */
+.company-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.company-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:18px;transition:.2s;cursor:pointer}
+.company-card:hover{border-color:#93c5fd;box-shadow:0 4px 16px rgba(37,99,235,.08)}
+.cin-tag{font-family:'DM Mono',monospace;font-size:10px;color:#94a3b8;margin-top:4px}
+.sector-pill{font-size:10px;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:20px;padding:3px 10px;font-weight:700}
+
+/* USER TABLE */
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:900;flex-shrink:0}
+
+/* NOTIFICATION */
 #notifPanel{position:absolute;top:50px;right:180px;width:300px;background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.12);z-index:200;display:none;overflow:hidden}
 #notifPanel.open{display:block;animation:fadeUp .18s ease}
 .notif-head{padding:12px 16px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center}
@@ -221,7 +229,7 @@ textarea.form-control{resize:vertical;min-height:72px}
 .notif-msg{font-size:11.5px;color:#334155;line-height:1.4}
 .notif-time{font-size:10px;color:#94a3b8;margin-top:2px}
 
-/* REVIEW SECTION */
+/* REVIEW */
 .review-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f8fafc;font-size:13px}
 .review-row:last-child{border:none}
 .review-key{color:#64748b}
@@ -232,10 +240,23 @@ textarea.form-control{resize:vertical;min-height:72px}
 .btn-reject{flex:1;padding:10px;border-radius:10px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
 .btn-reject:hover{background:#fee2e2}
 
-/* EMPTY STATE */
+/* DASH */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px}
+.dash-card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:16px}
+.dash-card.full{grid-column:1/-1}
+.progress-row{margin-bottom:10px}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.progress-bar-bg{height:5px;background:#f1f5f9;border-radius:10px;overflow:hidden}
+.progress-bar{height:100%;border-radius:10px;background:var(--blue);transition:.4s}
+
 .empty{text-align:center;padding:48px 20px;color:#94a3b8;font-size:13px}
 
-/* RESPONSIVE */
+/* CUSTOM INPUT TOGGLE */
+.select-with-custom{display:flex;flex-direction:column;gap:5px}
+.custom-input-row{display:flex;gap:6px;align-items:center}
+.custom-toggle-btn{padding:5px 10px;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.15s}
+.custom-toggle-btn:hover{background:#dbeafe}
+
 @media(max-width:768px){
   #sidebar{display:none}
   #main{margin-left:0;padding:14px}
@@ -243,21 +264,10 @@ textarea.form-control{resize:vertical;min-height:72px}
   .dash-grid{grid-template-columns:1fr}
   .stats-grid{grid-template-columns:1fr 1fr}
 }
-
-/* COMPANY CARDS */
-.company-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.company-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:18px;transition:.2s;cursor:pointer}
-.company-card:hover{border-color:#93c5fd;box-shadow:0 4px 16px rgba(37,99,235,.08)}
-.cin-tag{font-family:'DM Mono',monospace;font-size:10px;color:#94a3b8;margin-top:4px}
-.sector-pill{font-size:10px;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:20px;padding:3px 10px;font-weight:700}
-
-/* USER TABLE */
-.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:900;flex-shrink:0}
 </style>
 </head>
 <body>
 
-<!-- ════════════════ TOPBAR ════════════════ -->
 <header id="topbar">
   <div class="logo-wrap">
     <div class="logo-icon">
@@ -294,9 +304,7 @@ textarea.form-control{resize:vertical;min-height:72px}
   </div>
 </header>
 
-<!-- ════════════════ LAYOUT ════════════════ -->
 <div id="layout">
-  <!-- SIDEBAR -->
   <aside id="sidebar">
     <nav id="navMenu"></nav>
     <div class="sidebar-foot">
@@ -307,7 +315,6 @@ textarea.form-control{resize:vertical;min-height:72px}
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main id="main">
     <div id="page-dashboard" class="page active"></div>
     <div id="page-upsi" class="page"></div>
@@ -319,11 +326,7 @@ textarea.form-control{resize:vertical;min-height:72px}
   </main>
 </div>
 
-<!-- ════════════════════════════════════════
-     MODALS — outside layout, in body root
-════════════════════════════════════════ -->
-
-<!-- UPSI Form Modal -->
+<!-- ══════════════ UPSI FORM MODAL ══════════════ -->
 <div class="modal-overlay" id="modalUpsiForm">
   <div class="modal-box lg">
     <div class="modal-head">
@@ -332,49 +335,150 @@ textarea.form-control{resize:vertical;min-height:72px}
     </div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-group">
+
+        <!-- Company select with inline-create -->
+        <div class="form-group full">
           <label class="form-label">Company <span class="req">*</span></label>
-          <select class="form-control" id="f_upsi_company">
-            <option value="">Select company...</option>
-          </select>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select class="form-control" id="f_upsi_company" style="flex:1">
+              <option value="">— Select company —</option>
+            </select>
+            <button type="button" onclick="toggleInlineCompany()" id="inlineCoBtn"
+              style="flex-shrink:0;padding:8px 13px;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.15s"
+              title="Add a new company without leaving this form">
+              + New Company
+            </button>
+          </div>
+          <!-- Inline create company panel -->
+          <div id="inlineCoPanel" style="display:none" class="inline-create-panel">
+            <div class="inline-create-title">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="4" y="2" width="16" height="20" rx="2"/></svg>
+              Quick Add Company
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Company Name <span class="req">*</span></label>
+                <input class="form-control" id="ic_name" placeholder="Full legal company name"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">CIN <span class="req">*</span></label>
+                <input class="form-control" id="ic_cin" placeholder="e.g. L17110MH1973PLC019786" maxlength="21"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">PAN <span class="req">*</span></label>
+                <input class="form-control" id="ic_pan" placeholder="e.g. AAACR1234C" maxlength="10"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Sector <span class="req">*</span></label>
+                <select class="form-control" id="ic_sector">
+                  <option value="">Select sector...</option>
+                  <option>Banking</option><option>Energy</option><option>IT</option><option>FMCG</option>
+                  <option>Pharma</option><option>Auto</option><option>Infrastructure</option>
+                  <option>Telecom</option><option>Financial Services</option><option>Metal &amp; Mining</option>
+                  <option>Real Estate</option><option>Healthcare</option><option>Media</option><option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">ISIN</label>
+                <input class="form-control" id="ic_isin" placeholder="e.g. INE002A01018" maxlength="12"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Exchange</label>
+                <select class="form-control" id="ic_exchange">
+                  <option value="">Select...</option>
+                  <option>NSE</option><option>BSE</option><option>NSE &amp; BSE</option><option>Unlisted</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button type="button" onclick="saveInlineCompany()"
+                style="padding:8px 18px;background:#2563eb;color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;cursor:pointer">
+                ✓ Add &amp; Select
+              </button>
+              <button type="button" onclick="toggleInlineCompany()"
+                style="padding:8px 14px;background:none;border:1px solid #e2e8f0;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:#64748b;cursor:pointer">
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
+
         <div class="form-group">
           <label class="form-label">Nature <span class="req">*</span></label>
           <select class="form-control" id="f_upsi_nature">
+            <option value="">— Select —</option>
             <option>UPSI</option><option>Non-UPSI</option>
           </select>
         </div>
+
+        <!-- Period with Other option -->
         <div class="form-group">
           <label class="form-label">Period <span class="req">*</span></label>
-          <select class="form-control" id="f_upsi_period" onchange="onPeriodChange()">
-            <option>Quarterly</option><option>Monthly</option><option>Annually</option>
-          </select>
+          <div class="select-with-custom">
+            <select class="form-control" id="f_upsi_period" onchange="onPeriodChange()">
+              <option value="">— Select period —</option>
+              <option>Quarterly</option><option>Monthly</option><option>Annually</option>
+              <option value="__other__">Other (custom)...</option>
+            </select>
+            <div id="fg_period_custom" style="display:none">
+              <input class="form-control" id="f_upsi_period_custom" placeholder="Enter custom period..."/>
+            </div>
+          </div>
         </div>
-        <div class="form-group" id="fg_quarter">
+
+        <!-- Quarter with Other -->
+        <div class="form-group" id="fg_quarter" style="display:none">
           <label class="form-label">Quarter <span class="req">*</span></label>
-          <select class="form-control" id="f_upsi_quarter">
-            <option>Q1</option><option>Q2</option><option>Q3</option><option>Q4</option>
-          </select>
+          <div class="select-with-custom">
+            <select class="form-control" id="f_upsi_quarter" onchange="onQuarterChange()">
+              <option value="">— Select quarter —</option>
+              <option>Q1</option><option>Q2</option><option>Q3</option><option>Q4</option>
+              <option value="__other__">Other (custom)...</option>
+            </select>
+            <div id="fg_quarter_custom" style="display:none">
+              <input class="form-control" id="f_upsi_quarter_custom" placeholder="Enter custom quarter..."/>
+            </div>
+          </div>
         </div>
+
+        <!-- Month with Other -->
         <div class="form-group" id="fg_month" style="display:none">
           <label class="form-label">Month <span class="req">*</span></label>
-          <select class="form-control" id="f_upsi_month">
-            <option value="01">January</option><option value="02">February</option><option value="03">March</option>
-            <option value="04">April</option><option value="05">May</option><option value="06">June</option>
-            <option value="07">July</option><option value="08">August</option><option value="09">September</option>
-            <option value="10">October</option><option value="11">November</option><option value="12">December</option>
-          </select>
+          <div class="select-with-custom">
+            <select class="form-control" id="f_upsi_month" onchange="onMonthChange()">
+              <option value="">— Select month —</option>
+              <option value="01">January</option><option value="02">February</option><option value="03">March</option>
+              <option value="04">April</option><option value="05">May</option><option value="06">June</option>
+              <option value="07">July</option><option value="08">August</option><option value="09">September</option>
+              <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+              <option value="__other__">Other (custom)...</option>
+            </select>
+            <div id="fg_month_custom" style="display:none">
+              <input class="form-control" id="f_upsi_month_custom" placeholder="Enter custom month..."/>
+            </div>
+          </div>
         </div>
+
+        <!-- Year with Other -->
         <div class="form-group">
           <label class="form-label">Year <span class="req">*</span></label>
-          <select class="form-control" id="f_upsi_year">
-            <option>2022</option><option>2023</option><option selected>2024</option><option>2025</option>
-          </select>
+          <div class="select-with-custom">
+            <select class="form-control" id="f_upsi_year" onchange="onYearChange()">
+              <option value="">— Select year —</option>
+              <option>2020</option><option>2021</option><option>2022</option><option>2023</option>
+              <option selected>2024</option><option>2025</option><option>2026</option>
+              <option value="__other__">Other (custom)...</option>
+            </select>
+            <div id="fg_year_custom" style="display:none">
+              <input class="form-control" id="f_upsi_year_custom" placeholder="Enter year..."/>
+            </div>
+          </div>
         </div>
+
         <div class="form-group">
           <label class="form-label">Category <span class="req">*</span></label>
           <select class="form-control" id="f_upsi_category">
-            <option value="">Select...</option>
+            <option value="">— Select —</option>
             <option>Financial Results</option><option>Mergers &amp; Acquisitions</option><option>Board Decisions</option>
             <option>Regulatory Orders</option><option>Dividend</option><option>Buyback</option>
             <option>Fund Raising</option><option>Operational Update</option>
@@ -383,7 +487,8 @@ textarea.form-control{resize:vertical;min-height:72px}
         <div class="form-group">
           <label class="form-label">Severity <span class="req">*</span></label>
           <select class="form-control" id="f_upsi_severity">
-            <option>Critical</option><option selected>High</option><option>Medium</option><option>Low</option>
+            <option value="">— Select —</option>
+            <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
           </select>
         </div>
       </div>
@@ -414,7 +519,7 @@ textarea.form-control{resize:vertical;min-height:72px}
           <div class="form-group">
             <label class="form-label">Source From <span class="req">*</span></label>
             <select class="form-control" id="f_src_from">
-              <option value="">Select...</option>
+              <option value="">— Select —</option>
               <option>Email</option><option>Phone Call</option><option>Meeting</option>
               <option>WhatsApp</option><option>Official Announcement</option><option>Regulatory Filing</option>
               <option>News</option><option>Other</option>
@@ -433,13 +538,15 @@ textarea.form-control{resize:vertical;min-height:72px}
           <div class="form-group">
             <label class="form-label">Mode <span class="req">*</span></label>
             <select class="form-control" id="f_upsi_mode">
+              <option value="">— Select —</option>
               <option>Email</option><option>Phone Call</option><option>Meeting</option>
               <option>WhatsApp</option><option>Official Release</option><option>Other</option>
             </select>
           </div>
           <div class="form-group full">
-            <label class="form-label">Receivers <span class="form-hint">(Hold Ctrl/Cmd to select multiple)</span></label>
-            <select class="multi-select" id="f_upsi_receivers" multiple size="5"></select>
+            <label class="form-label">Receivers</label>
+            <div class="checkbox-group" id="f_upsi_receivers_wrap"></div>
+            <div style="font-size:10px;color:#94a3b8;margin-top:3px">Select one or more receivers</div>
           </div>
         </div>
       </div>
@@ -505,7 +612,7 @@ textarea.form-control{resize:vertical;min-height:72px}
   </div>
 </div>
 
-<!-- Pre-Clearance Review Modal -->
+<!-- Review Modal -->
 <div class="modal-overlay" id="modalReview">
   <div class="modal-box sm">
     <div class="modal-head">
@@ -527,8 +634,7 @@ textarea.form-control{resize:vertical;min-height:72px}
         </button>
       </div>
     </div>
-    <div class="modal-foot" style="justify-content:flex-start;padding-top:0;border:none">
-    </div>
+    <div class="modal-foot" style="justify-content:flex-start;padding-top:0;border:none"></div>
   </div>
 </div>
 
@@ -540,209 +646,66 @@ textarea.form-control{resize:vertical;min-height:72px}
       <button class="modal-close" onclick="closeModal('modalTradeForm')">&#x2715;</button>
     </div>
     <div class="modal-body">
-
-      <!-- BUY/SELL + SELF/RELATIVE TOGGLES -->
       <div style="display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap;align-items:flex-end">
         <div>
           <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:7px">Transaction Type <span style="color:#ef4444">*</span></div>
           <div id="buysell_wrap" style="display:flex;border-radius:10px;overflow:hidden;border:2px solid #e2e8f0">
-            <button id="tog_buy" onclick="setTradeTxn('Buy')"
-              style="padding:9px 28px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#ecfdf5;color:#059669;border-right:1px solid #e2e8f0;transition:.15s">
-              ▲&nbsp;BUY
-            </button>
-            <button id="tog_sell" onclick="setTradeTxn('Sell')"
-              style="padding:9px 28px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#fff;color:#94a3b8;transition:.15s">
-              ▼&nbsp;SELL
-            </button>
+            <button id="tog_buy" onclick="setTradeTxn('Buy')" style="padding:9px 28px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#ecfdf5;color:#059669;border-right:1px solid #e2e8f0;transition:.15s">▲&nbsp;BUY</button>
+            <button id="tog_sell" onclick="setTradeTxn('Sell')" style="padding:9px 28px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#fff;color:#94a3b8;transition:.15s">▼&nbsp;SELL</button>
           </div>
         </div>
         <div>
           <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:7px">Trade For <span style="color:#ef4444">*</span></div>
           <div style="display:flex;border-radius:10px;overflow:hidden;border:2px solid #e2e8f0">
-            <button id="tog_self" onclick="setTradeFor('Self')"
-              style="padding:9px 26px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#eff6ff;color:#2563eb;border-right:1px solid #e2e8f0;transition:.15s">
-              👤&nbsp;Self
-            </button>
-            <button id="tog_relative" onclick="setTradeFor('Relative')"
-              style="padding:9px 26px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#fff;color:#94a3b8;transition:.15s">
-              👨‍👩‍👧&nbsp;Relative
-            </button>
+            <button id="tog_self" onclick="setTradeFor('Self')" style="padding:9px 26px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#eff6ff;color:#2563eb;border-right:1px solid #e2e8f0;transition:.15s">👤&nbsp;Self</button>
+            <button id="tog_relative" onclick="setTradeFor('Relative')" style="padding:9px 26px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;border:none;cursor:pointer;background:#fff;color:#94a3b8;transition:.15s">👨‍👩‍👧&nbsp;Relative</button>
           </div>
         </div>
       </div>
 
-      <!-- Relative Details (shown when Relative) -->
       <div id="fg_relative_fields" style="display:none;background:#fafafa;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:16px">
         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:10px">Relative Details</div>
         <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">Relative Name <span class="req">*</span></label>
-            <input class="form-control" id="f_rel_name" placeholder="Full name"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Relationship <span class="req">*</span></label>
-            <select class="form-control" id="f_rel_type">
-              <option value="">Select...</option>
-              <option>Spouse</option><option>Father</option><option>Mother</option>
-              <option>Son</option><option>Daughter</option><option>Brother</option>
-              <option>Sister</option><option>In-Laws</option><option>Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Relative PAN</label>
-            <input class="form-control" id="f_rel_pan" placeholder="ABCDE1234F" maxlength="10"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Demat / Broker Account</label>
-            <input class="form-control" id="f_rel_demat" placeholder="Demat account no."/>
-          </div>
+          <div class="form-group"><label class="form-label">Relative Name <span class="req">*</span></label><input class="form-control" id="f_rel_name" placeholder="Full name"/></div>
+          <div class="form-group"><label class="form-label">Relationship <span class="req">*</span></label><select class="form-control" id="f_rel_type"><option value="">Select...</option><option>Spouse</option><option>Father</option><option>Mother</option><option>Son</option><option>Daughter</option><option>Brother</option><option>Sister</option><option>In-Laws</option><option>Other</option></select></div>
+          <div class="form-group"><label class="form-label">Relative PAN</label><input class="form-control" id="f_rel_pan" placeholder="ABCDE1234F" maxlength="10"/></div>
+          <div class="form-group"><label class="form-label">Demat / Broker Account</label><input class="form-control" id="f_rel_demat" placeholder="Demat account no."/></div>
         </div>
       </div>
 
-      <!-- Core fields -->
       <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Company <span class="req">*</span></label>
-          <select class="form-control" id="f_trade_company"><option value="">Select company...</option></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Instrument Type <span class="req">*</span></label>
-          <select class="form-control" id="f_trade_type" onchange="onTradeType()">
-            <option>Equity</option><option>Mutual Fund</option><option>F&amp;O</option>
-            <option>Bond</option><option>Debenture</option><option>ETF</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Transaction Date <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_date" type="date"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Amount (₹) <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_amount" type="number" placeholder="0.00"/>
-        </div>
-
-        <!-- EQUITY -->
-        <div class="form-group" id="fg_equity_qty">
-          <label class="form-label">Quantity <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_qty" type="number" placeholder="No. of shares"/>
-        </div>
-        <div class="form-group" id="fg_equity_price">
-          <label class="form-label">Price per Share (₹) <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_price" type="number" placeholder="₹"/>
-        </div>
-        <div class="form-group" id="fg_equity_exchange" style="display:none">
-          <label class="form-label">Exchange</label>
-          <select class="form-control" id="f_trade_exchange"><option>NSE</option><option>BSE</option><option>NSE &amp; BSE</option></select>
-        </div>
-        <div class="form-group" id="fg_equity_demat" style="display:none">
-          <label class="form-label">Demat / Broker Account</label>
-          <input class="form-control" id="f_trade_demat" placeholder="Demat account no."/>
-        </div>
-
-        <!-- MUTUAL FUND -->
-        <div class="form-group" id="fg_mf_house" style="display:none">
-          <label class="form-label">Fund House <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_fundhouse" placeholder="e.g. SBI MF, HDFC MF"/>
-        </div>
-        <div class="form-group" id="fg_mf_scheme" style="display:none">
-          <label class="form-label">Scheme Name <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_scheme" placeholder="e.g. SBI Bluechip Fund"/>
-        </div>
-        <div class="form-group" id="fg_mf_nav" style="display:none">
-          <label class="form-label">NAV (₹) <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_nav" type="number" placeholder="Net Asset Value"/>
-        </div>
-        <div class="form-group" id="fg_mf_units" style="display:none">
-          <label class="form-label">Units</label>
-          <input class="form-control" id="f_trade_units" type="number" placeholder="No. of units"/>
-        </div>
-        <div class="form-group" id="fg_mf_folio" style="display:none">
-          <label class="form-label">Folio Number</label>
-          <input class="form-control" id="f_trade_folio" placeholder="Folio no."/>
-        </div>
-        <div class="form-group" id="fg_mf_mode" style="display:none">
-          <label class="form-label">Investment Mode</label>
-          <select class="form-control" id="f_trade_mf_mode"><option>SIP</option><option>Lumpsum</option><option>STP</option><option>SWP</option></select>
-        </div>
-
-        <!-- F&O -->
-        <div class="form-group" id="fg_fo_under" style="display:none">
-          <label class="form-label">Underlying Asset <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_under" placeholder="e.g. NIFTY, RELIANCE"/>
-        </div>
-        <div class="form-group" id="fg_fo_insttype" style="display:none">
-          <label class="form-label">Instrument Sub-Type <span class="req">*</span></label>
-          <select class="form-control" id="f_trade_fo_inst"><option>Futures</option><option>Call Option</option><option>Put Option</option></select>
-        </div>
-        <div class="form-group" id="fg_fo_expiry" style="display:none">
-          <label class="form-label">Expiry Date <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_expiry" type="date"/>
-        </div>
-        <div class="form-group" id="fg_fo_strike" style="display:none">
-          <label class="form-label">Strike Price (₹) <span style="color:#94a3b8;font-weight:400">(Options only)</span></label>
-          <input class="form-control" id="f_trade_strike" type="number" placeholder="0.00"/>
-        </div>
-        <div class="form-group" id="fg_fo_open" style="display:none">
-          <label class="form-label">Open Position (Lots) <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_open" type="number"/>
-        </div>
-        <div class="form-group" id="fg_fo_close" style="display:none">
-          <label class="form-label">Close Position (Lots)</label>
-          <input class="form-control" id="f_trade_close" type="number"/>
-        </div>
-        <div class="form-group" id="fg_fo_margin" style="display:none">
-          <label class="form-label">Margin Paid (₹)</label>
-          <input class="form-control" id="f_trade_margin" type="number" placeholder="0.00"/>
-        </div>
-        <div class="form-group" id="fg_fo_exchange" style="display:none">
-          <label class="form-label">Exchange</label>
-          <select class="form-control" id="f_trade_fo_exchange"><option>NSE</option><option>BSE</option><option>MCX</option><option>NCDEX</option></select>
-        </div>
-
-        <!-- BOND / DEBENTURE -->
-        <div class="form-group" id="fg_bond_name" style="display:none">
-          <label class="form-label">Bond / Debenture Name <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_bondname" placeholder="Full bond name"/>
-        </div>
-        <div class="form-group" id="fg_bond_isin" style="display:none">
-          <label class="form-label">ISIN</label>
-          <input class="form-control" id="f_trade_isin" placeholder="e.g. INE001A07QN3" maxlength="12"/>
-        </div>
-        <div class="form-group" id="fg_bond_coupon" style="display:none">
-          <label class="form-label">Coupon Rate (%)</label>
-          <input class="form-control" id="f_trade_coupon" type="number" placeholder="e.g. 7.25" step="0.01"/>
-        </div>
-        <div class="form-group" id="fg_bond_maturity" style="display:none">
-          <label class="form-label">Maturity Date</label>
-          <input class="form-control" id="f_trade_maturity" type="date"/>
-        </div>
-        <div class="form-group" id="fg_bond_face" style="display:none">
-          <label class="form-label">Face Value (₹)</label>
-          <input class="form-control" id="f_trade_face" type="number" placeholder="1000"/>
-        </div>
-        <div class="form-group" id="fg_bond_units" style="display:none">
-          <label class="form-label">No. of Units / Bonds</label>
-          <input class="form-control" id="f_trade_bond_units" type="number"/>
-        </div>
-
-        <!-- ETF -->
-        <div class="form-group" id="fg_etf_name" style="display:none">
-          <label class="form-label">ETF Name <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_etfname" placeholder="e.g. Nifty BeES, Gold ETF"/>
-        </div>
-        <div class="form-group" id="fg_etf_qty" style="display:none">
-          <label class="form-label">Quantity <span class="req">*</span></label>
-          <input class="form-control" id="f_trade_etf_qty" type="number"/>
-        </div>
-        <div class="form-group" id="fg_etf_price" style="display:none">
-          <label class="form-label">Price per Unit (₹)</label>
-          <input class="form-control" id="f_trade_etf_price" type="number"/>
-        </div>
-
-        <div class="form-group full">
-          <label class="form-label">Description / Remarks</label>
-          <textarea class="form-control" id="f_trade_desc" placeholder="Additional details, purpose of transaction..."></textarea>
-        </div>
+        <div class="form-group"><label class="form-label">Company <span class="req">*</span></label><select class="form-control" id="f_trade_company"><option value="">Select company...</option></select></div>
+        <div class="form-group"><label class="form-label">Instrument Type <span class="req">*</span></label><select class="form-control" id="f_trade_type" onchange="onTradeType()"><option>Equity</option><option>Mutual Fund</option><option>F&amp;O</option><option>Bond</option><option>Debenture</option><option>ETF</option></select></div>
+        <div class="form-group"><label class="form-label">Transaction Date <span class="req">*</span></label><input class="form-control" id="f_trade_date" type="date"/></div>
+        <div class="form-group"><label class="form-label">Amount (₹) <span class="req">*</span></label><input class="form-control" id="f_trade_amount" type="number" placeholder="0.00"/></div>
+        <div class="form-group" id="fg_equity_qty"><label class="form-label">Quantity <span class="req">*</span></label><input class="form-control" id="f_trade_qty" type="number" placeholder="No. of shares"/></div>
+        <div class="form-group" id="fg_equity_price"><label class="form-label">Price per Share (₹) <span class="req">*</span></label><input class="form-control" id="f_trade_price" type="number" placeholder="₹"/></div>
+        <div class="form-group" id="fg_equity_exchange" style="display:none"><label class="form-label">Exchange</label><select class="form-control" id="f_trade_exchange"><option>NSE</option><option>BSE</option><option>NSE &amp; BSE</option></select></div>
+        <div class="form-group" id="fg_equity_demat" style="display:none"><label class="form-label">Demat / Broker Account</label><input class="form-control" id="f_trade_demat" placeholder="Demat account no."/></div>
+        <div class="form-group" id="fg_mf_house" style="display:none"><label class="form-label">Fund House <span class="req">*</span></label><input class="form-control" id="f_trade_fundhouse" placeholder="e.g. SBI MF"/></div>
+        <div class="form-group" id="fg_mf_scheme" style="display:none"><label class="form-label">Scheme Name <span class="req">*</span></label><input class="form-control" id="f_trade_scheme" placeholder="e.g. SBI Bluechip Fund"/></div>
+        <div class="form-group" id="fg_mf_nav" style="display:none"><label class="form-label">NAV (₹) <span class="req">*</span></label><input class="form-control" id="f_trade_nav" type="number" placeholder="Net Asset Value"/></div>
+        <div class="form-group" id="fg_mf_units" style="display:none"><label class="form-label">Units</label><input class="form-control" id="f_trade_units" type="number"/></div>
+        <div class="form-group" id="fg_mf_folio" style="display:none"><label class="form-label">Folio Number</label><input class="form-control" id="f_trade_folio" placeholder="Folio no."/></div>
+        <div class="form-group" id="fg_mf_mode" style="display:none"><label class="form-label">Investment Mode</label><select class="form-control" id="f_trade_mf_mode"><option>SIP</option><option>Lumpsum</option><option>STP</option><option>SWP</option></select></div>
+        <div class="form-group" id="fg_fo_under" style="display:none"><label class="form-label">Underlying Asset <span class="req">*</span></label><input class="form-control" id="f_trade_under" placeholder="e.g. NIFTY, RELIANCE"/></div>
+        <div class="form-group" id="fg_fo_insttype" style="display:none"><label class="form-label">Instrument Sub-Type <span class="req">*</span></label><select class="form-control" id="f_trade_fo_inst"><option>Futures</option><option>Call Option</option><option>Put Option</option></select></div>
+        <div class="form-group" id="fg_fo_expiry" style="display:none"><label class="form-label">Expiry Date <span class="req">*</span></label><input class="form-control" id="f_trade_expiry" type="date"/></div>
+        <div class="form-group" id="fg_fo_strike" style="display:none"><label class="form-label">Strike Price (₹)</label><input class="form-control" id="f_trade_strike" type="number" placeholder="0.00"/></div>
+        <div class="form-group" id="fg_fo_open" style="display:none"><label class="form-label">Open Position (Lots) <span class="req">*</span></label><input class="form-control" id="f_trade_open" type="number"/></div>
+        <div class="form-group" id="fg_fo_close" style="display:none"><label class="form-label">Close Position (Lots)</label><input class="form-control" id="f_trade_close" type="number"/></div>
+        <div class="form-group" id="fg_fo_margin" style="display:none"><label class="form-label">Margin Paid (₹)</label><input class="form-control" id="f_trade_margin" type="number" placeholder="0.00"/></div>
+        <div class="form-group" id="fg_fo_exchange" style="display:none"><label class="form-label">Exchange</label><select class="form-control" id="f_trade_fo_exchange"><option>NSE</option><option>BSE</option><option>MCX</option><option>NCDEX</option></select></div>
+        <div class="form-group" id="fg_bond_name" style="display:none"><label class="form-label">Bond / Debenture Name <span class="req">*</span></label><input class="form-control" id="f_trade_bondname" placeholder="Full bond name"/></div>
+        <div class="form-group" id="fg_bond_isin" style="display:none"><label class="form-label">ISIN</label><input class="form-control" id="f_trade_isin" placeholder="e.g. INE001A07QN3" maxlength="12"/></div>
+        <div class="form-group" id="fg_bond_coupon" style="display:none"><label class="form-label">Coupon Rate (%)</label><input class="form-control" id="f_trade_coupon" type="number" step="0.01"/></div>
+        <div class="form-group" id="fg_bond_maturity" style="display:none"><label class="form-label">Maturity Date</label><input class="form-control" id="f_trade_maturity" type="date"/></div>
+        <div class="form-group" id="fg_bond_face" style="display:none"><label class="form-label">Face Value (₹)</label><input class="form-control" id="f_trade_face" type="number" placeholder="1000"/></div>
+        <div class="form-group" id="fg_bond_units" style="display:none"><label class="form-label">No. of Units / Bonds</label><input class="form-control" id="f_trade_bond_units" type="number"/></div>
+        <div class="form-group" id="fg_etf_name" style="display:none"><label class="form-label">ETF Name <span class="req">*</span></label><input class="form-control" id="f_trade_etfname" placeholder="e.g. Nifty BeES"/></div>
+        <div class="form-group" id="fg_etf_qty" style="display:none"><label class="form-label">Quantity <span class="req">*</span></label><input class="form-control" id="f_trade_etf_qty" type="number"/></div>
+        <div class="form-group" id="fg_etf_price" style="display:none"><label class="form-label">Price per Unit (₹)</label><input class="form-control" id="f_trade_etf_price" type="number"/></div>
+        <div class="form-group full"><label class="form-label">Description / Remarks</label><textarea class="form-control" id="f_trade_desc" placeholder="Additional details, purpose of transaction..."></textarea></div>
       </div>
     </div>
     <div class="modal-foot">
@@ -752,7 +715,7 @@ textarea.form-control{resize:vertical;min-height:72px}
   </div>
 </div>
 
-<!-- Company Form Modal -->
+<!-- Company Form Modal (standalone) -->
 <div class="modal-overlay" id="modalCompanyForm">
   <div class="modal-box sm">
     <div class="modal-head">
@@ -761,41 +724,12 @@ textarea.form-control{resize:vertical;min-height:72px}
     </div>
     <div class="modal-body">
       <div class="form-grid cols-1">
-        <div class="form-group">
-          <label class="form-label">Company Name <span class="req">*</span></label>
-          <input class="form-control" id="f_co_name" placeholder="Full legal company name"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">CIN <span class="req">*</span></label>
-          <input class="form-control" id="f_co_cin" placeholder="e.g. L17110MH1973PLC019786" maxlength="21"/>
-          <span class="form-hint">Corporate Identity Number — 21 characters</span>
-        </div>
-        <div class="form-group">
-          <label class="form-label">PAN <span class="req">*</span></label>
-          <input class="form-control" id="f_co_pan" placeholder="e.g. AAACR1234C" maxlength="10"/>
-          <span class="form-hint">Company Permanent Account Number — 10 characters</span>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Sector <span class="req">*</span></label>
-          <select class="form-control" id="f_co_sector">
-            <option value="">Select sector...</option>
-            <option>Banking</option><option>Energy</option><option>IT</option><option>FMCG</option>
-            <option>Pharma</option><option>Auto</option><option>Infrastructure</option>
-            <option>Telecom</option><option>Financial Services</option><option>Metal &amp; Mining</option>
-            <option>Real Estate</option><option>Healthcare</option><option>Media</option><option>Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">ISIN</label>
-          <input class="form-control" id="f_co_isin" placeholder="e.g. INE002A01018" maxlength="12"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Exchange Listed</label>
-          <select class="form-control" id="f_co_exchange">
-            <option value="">Select...</option>
-            <option>NSE</option><option>BSE</option><option>NSE &amp; BSE</option><option>Unlisted</option>
-          </select>
-        </div>
+        <div class="form-group"><label class="form-label">Company Name <span class="req">*</span></label><input class="form-control" id="f_co_name" placeholder="Full legal company name"/></div>
+        <div class="form-group"><label class="form-label">CIN <span class="req">*</span></label><input class="form-control" id="f_co_cin" placeholder="e.g. L17110MH1973PLC019786" maxlength="21"/><span class="form-hint">21 characters</span></div>
+        <div class="form-group"><label class="form-label">PAN <span class="req">*</span></label><input class="form-control" id="f_co_pan" placeholder="e.g. AAACR1234C" maxlength="10"/><span class="form-hint">10 characters</span></div>
+        <div class="form-group"><label class="form-label">Sector <span class="req">*</span></label><select class="form-control" id="f_co_sector"><option value="">Select sector...</option><option>Banking</option><option>Energy</option><option>IT</option><option>FMCG</option><option>Pharma</option><option>Auto</option><option>Infrastructure</option><option>Telecom</option><option>Financial Services</option><option>Metal &amp; Mining</option><option>Real Estate</option><option>Healthcare</option><option>Media</option><option>Other</option></select></div>
+        <div class="form-group"><label class="form-label">ISIN</label><input class="form-control" id="f_co_isin" placeholder="e.g. INE002A01018" maxlength="12"/></div>
+        <div class="form-group"><label class="form-label">Exchange Listed</label><select class="form-control" id="f_co_exchange"><option value="">Select...</option><option>NSE</option><option>BSE</option><option>NSE &amp; BSE</option><option>Unlisted</option></select></div>
       </div>
     </div>
     <div class="modal-foot">
@@ -805,10 +739,9 @@ textarea.form-control{resize:vertical;min-height:72px}
   </div>
 </div>
 
-
-<!-- ════════════════════════════════════════ SCRIPT ════════════════════════════════════════ -->
+<!-- ══════════════ SCRIPT ══════════════ -->
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────────────
+// ── DATA ─────────────────────────────────────────────────────────────────────
 const COMPANIES = [
   {id:1,cin:"L17110MH1973PLC019786",pan:"AAACR5055K",name:"Reliance Industries Ltd",sector:"Energy",isin:"INE002A01018",exchange:"NSE & BSE"},
   {id:2,cin:"L72200TN1996PLC035987",pan:"AAACI1474H",name:"Infosys Limited",sector:"IT",isin:"INE009A01021",exchange:"NSE & BSE"},
@@ -822,7 +755,6 @@ const USERS = [
   {id:4,name:"Sneha Iyer",email:"sneha.iyer@corp.in",phone:"9871234560",pan:"MNOI3456H",designation:"Chief Compliance",role:"compliance",dept:"Compliance"},
   {id:5,name:"Vikram Singh",email:"vikram.singh@corp.in",phone:"9765432100",pan:"ABCVS7890J",designation:"Junior Analyst",role:"rating",dept:"Rating"},
 ];
-
 let UPSI = [
   {id:"u1",companyId:1,nature:"UPSI",period:"Quarterly",quarter:"Q1",month:"",year:"2024",category:"Financial Results",severity:"High",source:{name:"Arjun Mehta",phone:"9876543210",email:"arjun.mehta@corp.in",pan:"ABCPM1234D",designation:"Senior Analyst",from:"Email"},time:"2024-04-10T10:30",mode:"Email",receivers:[1,3],createdBy:1,createdAt:"2024-04-10T10:30"},
   {id:"u2",companyId:2,nature:"Non-UPSI",period:"Monthly",quarter:"",month:"05",year:"2024",category:"Operational Update",severity:"Low",source:{name:"Priya Sharma",phone:"9123456789",email:"priya.sharma@corp.in",pan:"XYZPS5678F",designation:"Compliance Officer",from:"Meeting"},time:"2024-05-15T14:00",mode:"Meeting",receivers:[2],createdBy:3,createdAt:"2024-05-15T14:00"},
@@ -832,9 +764,9 @@ let PRECLEARANCE = [
   {id:"p2",companyId:2,cin:"L72200TN1996PLC035987",qty:200,expDate:"2024-05-25",description:"Buy shares post results",status:"Approved",createdBy:3,createdAt:"2024-05-20T11:00",reviewedBy:2,reviewedAt:"2024-05-21T10:00",remarks:"Approved after review"},
 ];
 let TRADING = [
-  {id:"t1",companyId:1,type:"Equity",qty:100,amount:25000,date:"2024-06-01",price:250,description:"Market buy",createdBy:1,createdAt:"2024-06-01T12:00"},
-  {id:"t2",companyId:3,type:"Mutual Fund",fundHouse:"SBI MF",nav:45.23,amount:10000,date:"2024-06-05",description:"SIP investment",createdBy:3,createdAt:"2024-06-05T09:00"},
-  {id:"t3",companyId:1,type:"F&O",openPosition:5,closePosition:3,amount:75000,date:"2024-06-10",underlying:"RELIANCE",expiry:"2024-06-27",description:"Futures position",createdBy:1,createdAt:"2024-06-10T15:00"},
+  {id:"t1",companyId:1,type:"Equity",txn:"Buy",tradeFor:"Self",qty:100,amount:25000,date:"2024-06-01",price:250,description:"Market buy",createdBy:1,createdAt:"2024-06-01T12:00"},
+  {id:"t2",companyId:3,type:"Mutual Fund",txn:"Buy",tradeFor:"Self",fundHouse:"SBI MF",scheme:"SBI Bluechip",nav:45.23,amount:10000,date:"2024-06-05",description:"SIP investment",createdBy:3,createdAt:"2024-06-05T09:00"},
+  {id:"t3",companyId:1,type:"F&O",txn:"Sell",tradeFor:"Self",openPosition:5,closePosition:3,amount:75000,date:"2024-06-10",underlying:"RELIANCE",expiry:"2024-06-27",description:"Futures position",createdBy:1,createdAt:"2024-06-10T15:00"},
 ];
 let AUDIT = [
   {id:"a1",userId:1,userName:"Arjun Mehta",action:"CREATE",module:"UPSI",recordId:"u1",details:"Created UPSI record for Reliance Industries",timestamp:"2024-04-10T10:30"},
@@ -852,6 +784,10 @@ let currentRole = "rating";
 let currentUserId = 1;
 let currentPage = "dashboard";
 let reviewingId = null;
+let tradeTxn = "Buy";
+let tradeFor = "Self";
+let tradeTypeFilter = "";
+let upsiFilters = {nature:"",severity:"",companyId:""};
 
 const gid = () => Math.random().toString(36).substr(2,8);
 const now = () => new Date().toISOString().slice(0,16);
@@ -919,12 +855,12 @@ function switchRole(r){
 function openModal(id){ document.getElementById(id).classList.add("open"); }
 function closeModal(id){ document.getElementById(id).classList.remove("open"); }
 
-// close on overlay click
 document.querySelectorAll(".modal-overlay").forEach(o=>{
   o.addEventListener("click", e=>{ if(e.target===o) o.classList.remove("open"); });
 });
-// close on Escape
-document.addEventListener("keydown", e=>{ if(e.key==="Escape") document.querySelectorAll(".modal-overlay.open").forEach(o=>o.classList.remove("open")); });
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape") document.querySelectorAll(".modal-overlay.open").forEach(o=>o.classList.remove("open"));
+});
 
 // ── NOTIFICATIONS ─────────────────────────────────────────────────────────────
 function addNotif(userId, message, type="info"){
@@ -962,12 +898,12 @@ document.addEventListener("click",e=>{
     document.getElementById("notifPanel").classList.remove("open");
 });
 
-// ── AUDIT ──────────────────────────────────────────────────────────────────────
+// ── AUDIT ─────────────────────────────────────────────────────────────────────
 function addAudit(action,module,recordId,details){
   AUDIT.unshift({id:gid(),userId:currentUserId,userName:currentUser().name,action,module,recordId,details,timestamp:now()});
 }
 
-// ── BADGE HTML ─────────────────────────────────────────────────────────────────
+// ── BADGE ─────────────────────────────────────────────────────────────────────
 function badge(text){
   const map={High:"danger",Critical:"danger",Medium:"warning",Low:"success",Approved:"success",Rejected:"danger",Pending:"warning",UPSI:"danger","Non-UPSI":"success",CREATE:"info",UPDATE:"warning",DELETE:"danger",VIEW:"default",APPROVE:"success",REJECT:"danger",Equity:"info","Mutual Fund":"success","F&O":"purple"};
   return `<span class="badge badge-${map[text]||"default"}">${text}</span>`;
@@ -975,24 +911,124 @@ function badge(text){
 
 // ── POPULATE SELECTS ──────────────────────────────────────────────────────────
 function populateCompanySelects(){
-  const opts = '<option value="">Select company...</option>'+COMPANIES.map(c=>`<option value="${c.id}">${c.name}</option>`).join("");
+  const opts = '<option value="">— Select company —</option>'+COMPANIES.map(c=>`<option value="${c.id}">${c.name}</option>`).join("");
   ["f_upsi_company","f_pre_company","f_trade_company"].forEach(id=>{
     const el=document.getElementById(id);
-    if(el)el.innerHTML=opts;
+    if(el) el.innerHTML=opts;
   });
 }
-function populateReceiverSelect(){
-  document.getElementById("f_upsi_receivers").innerHTML=
-    USERS.map(u=>`<option value="${u.id}">${u.name} (${u.designation})</option>`).join("");
+
+function buildReceiverCheckboxes(){
+  const wrap = document.getElementById("f_upsi_receivers_wrap");
+  if(!wrap) return;
+  wrap.innerHTML = USERS.map(u=>`
+    <label class="checkbox-item">
+      <input type="checkbox" value="${u.id}" id="rcv_${u.id}"/>
+      <label for="rcv_${u.id}" style="pointer-events:none">
+        ${u.name}
+        <span>${u.designation} · ${u.dept}</span>
+      </label>
+    </label>`).join("");
+}
+
+function getSelectedReceivers(){
+  const wrap = document.getElementById("f_upsi_receivers_wrap");
+  if(!wrap) return [];
+  return Array.from(wrap.querySelectorAll('input[type=checkbox]:checked')).map(el=>Number(el.value));
+}
+
+// ── INLINE COMPANY CREATE ─────────────────────────────────────────────────────
+function toggleInlineCompany(){
+  const panel = document.getElementById("inlineCoPanel");
+  const btn = document.getElementById("inlineCoBtn");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  btn.textContent = isOpen ? "+ New Company" : "✕ Cancel";
+  btn.style.background = isOpen ? "#eff6ff" : "#fef2f2";
+  btn.style.color = isOpen ? "#2563eb" : "#dc2626";
+  btn.style.borderColor = isOpen ? "#bfdbfe" : "#fecaca";
+  if(!isOpen){
+    ["ic_name","ic_cin","ic_pan","ic_isin"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
+    document.getElementById("ic_sector").selectedIndex=0;
+    document.getElementById("ic_exchange").selectedIndex=0;
+  }
+}
+
+function saveInlineCompany(){
+  const name = document.getElementById("ic_name").value.trim();
+  const cin  = document.getElementById("ic_cin").value.trim().toUpperCase();
+  const pan  = document.getElementById("ic_pan").value.trim().toUpperCase();
+  const sector = document.getElementById("ic_sector").value;
+  if(!name){ alert("Company name is required"); return; }
+  if(!cin || cin.length!==21){ alert("CIN must be exactly 21 characters"); return; }
+  if(!pan || pan.length!==10){ alert("PAN must be exactly 10 characters"); return; }
+  if(!sector){ alert("Please select a sector"); return; }
+  if(COMPANIES.find(c=>c.cin===cin)){ alert("A company with this CIN already exists"); return; }
+  const newCo = {
+    id: COMPANIES.length+1, cin, pan, name, sector,
+    isin: document.getElementById("ic_isin").value.trim(),
+    exchange: document.getElementById("ic_exchange").value
+  };
+  COMPANIES.push(newCo);
+  addAudit("CREATE","Companies",String(newCo.id),"Added company: "+name);
+  // update all dropdowns and select the new one
+  populateCompanySelects();
+  document.getElementById("f_upsi_company").value = newCo.id;
+  // re-sync trade & pre selects too
+  const pre = document.getElementById("f_pre_company");
+  if(pre) pre.innerHTML = '<option value="">— Select company —</option>'+COMPANIES.map(c=>`<option value="${c.id}">${c.name}</option>`).join("");
+  toggleInlineCompany();
+  addNotif(currentUserId, `Company "${name}" added`, "success");
+}
+
+// ── PERIOD / QUARTER / MONTH / YEAR CUSTOM INPUT ──────────────────────────────
+function onPeriodChange(){
+  const v = document.getElementById("f_upsi_period").value;
+  document.getElementById("fg_period_custom").style.display = v==="__other__" ? "block" : "none";
+  document.getElementById("fg_quarter").style.display = v==="Quarterly" ? "flex" : "none";
+  document.getElementById("fg_month").style.display   = v==="Monthly"   ? "flex" : "none";
+}
+function onQuarterChange(){
+  const v = document.getElementById("f_upsi_quarter").value;
+  document.getElementById("fg_quarter_custom").style.display = v==="__other__" ? "block" : "none";
+}
+function onMonthChange(){
+  const v = document.getElementById("f_upsi_month").value;
+  document.getElementById("fg_month_custom").style.display = v==="__other__" ? "block" : "none";
+}
+function onYearChange(){
+  const v = document.getElementById("f_upsi_year").value;
+  document.getElementById("fg_year_custom").style.display = v==="__other__" ? "block" : "none";
+}
+
+function getPeriodVal(){
+  const sel = document.getElementById("f_upsi_period").value;
+  if(sel==="__other__") return document.getElementById("f_upsi_period_custom").value.trim();
+  return sel;
+}
+function getQuarterVal(){
+  const sel = document.getElementById("f_upsi_quarter").value;
+  if(sel==="__other__") return document.getElementById("f_upsi_quarter_custom").value.trim();
+  return sel;
+}
+function getMonthVal(){
+  const sel = document.getElementById("f_upsi_month").value;
+  if(sel==="__other__") return document.getElementById("f_upsi_month_custom").value.trim();
+  return sel;
+}
+function getYearVal(){
+  const sel = document.getElementById("f_upsi_year").value;
+  if(sel==="__other__") return document.getElementById("f_upsi_year_custom").value.trim();
+  return sel;
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
 function renderDashboard(){
-  const myUpsi = currentRole==="compliance"?UPSI:UPSI.filter(r=>r.createdBy===currentUserId);
-  const myPre = currentRole==="compliance"?PRECLEARANCE:PRECLEARANCE.filter(r=>r.createdBy===currentUserId);
-  const myTrade = currentRole==="compliance"?TRADING:TRADING.filter(r=>r.createdBy===currentUserId);
+  const myUpsi  = currentRole==="compliance" ? UPSI  : UPSI.filter(r=>r.createdBy===currentUserId);
+  const myPre   = currentRole==="compliance" ? PRECLEARANCE : PRECLEARANCE.filter(r=>r.createdBy===currentUserId);
+  const myTrade = currentRole==="compliance" ? TRADING : TRADING.filter(r=>r.createdBy===currentUserId);
   const pending = PRECLEARANCE.filter(r=>r.status==="Pending");
-  const cats=["Financial Results","Mergers & Acquisitions","Board Decisions","Regulatory Orders","Operational Update"];
+  const cats = ["Financial Results","Mergers & Acquisitions","Board Decisions","Regulatory Orders","Operational Update"];
 
   document.getElementById("page-dashboard").innerHTML=`
   <div class="page-header">
@@ -1007,13 +1043,12 @@ function renderDashboard(){
     ${statCard("Trade Disclosures",myTrade.length,"green",'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',"This period")}
     ${currentRole==="compliance"
       ? statCard("Pending Approvals",pending.length,"red",'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',"Require action")
-      : statCard("Companies",COMPANIES.length,"purple",'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/>',"Active entities")}
+      : statCard("Companies",COMPANIES.length,"purple",'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/>','Active entities')}
   </div>
   <div class="dash-grid">
     <div class="dash-card">
       <div style="font-size:12px;font-weight:700;color:#334155;margin-bottom:14px;display:flex;align-items:center;gap:6px">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg>
-        UPSI Breakdown
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg>UPSI Breakdown
       </div>
       ${cats.map(cat=>{
         const cnt=myUpsi.filter(r=>r.category===cat).length;
@@ -1042,7 +1077,7 @@ function renderDashboard(){
     </div>
     <div class="dash-card">
       <div style="font-size:12px;font-weight:700;color:#334155;margin-bottom:14px">Recent Activity</div>
-      ${AUDIT.slice(0,5).map(l=>`
+      ${(currentRole==="compliance" ? AUDIT : AUDIT.filter(l=>l.userId===currentUserId)).slice(0,5).map(l=>`
         <div style="display:flex;gap:10px;margin-bottom:10px">
           <div style="width:26px;height:26px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;font-weight:900;color:#2563eb">${l.userName.split(" ").map(w=>w[0]).join("")}</div>
           <div style="flex:1;min-width:0">
@@ -1060,10 +1095,7 @@ function renderDashboard(){
         ${COMPANIES.map(c=>`
           <div class="company-card">
             <div style="display:flex;align-items:flex-start;justify-content:space-between">
-              <div>
-                <div style="font-weight:800;font-size:14px">${c.name}</div>
-                <div class="cin-tag">CIN: ${c.cin}</div>
-              </div>
+              <div><div style="font-weight:800;font-size:14px">${c.name}</div><div class="cin-tag">CIN: ${c.cin}</div></div>
               <span class="sector-pill">${c.sector}</span>
             </div>
             <div style="display:flex;gap:16px;margin-top:12px;padding-top:10px;border-top:1px solid #f1f5f9">
@@ -1086,8 +1118,6 @@ function statCard(label,val,color,iconPath,sub){
 }
 
 // ── UPSI ──────────────────────────────────────────────────────────────────────
-let upsiFilters = {nature:"",severity:"",companyId:""};
-
 function renderUpsi(){
   const canCreate = currentRole==="rating";
   document.getElementById("page-upsi").innerHTML=`
@@ -1119,7 +1149,7 @@ function renderUpsi(){
 }
 
 function renderUpsiTable(){
-  let rows = currentRole==="compliance"?UPSI:UPSI.filter(r=>r.createdBy===currentUserId);
+  let rows = currentRole==="compliance" ? UPSI : UPSI.filter(r=>r.createdBy===currentUserId);
   if(upsiFilters.nature) rows=rows.filter(r=>r.nature===upsiFilters.nature);
   if(upsiFilters.severity) rows=rows.filter(r=>r.severity===upsiFilters.severity);
   if(upsiFilters.companyId) rows=rows.filter(r=>r.companyId===Number(upsiFilters.companyId));
@@ -1128,7 +1158,7 @@ function renderUpsiTable(){
   if(!rows.length){ tbody.innerHTML=`<tr><td colspan="9" class="empty">No records found</td></tr>`; return; }
   tbody.innerHTML = rows.map(r=>{
     const c = co(r.companyId);
-    const period = r.period==="Quarterly"?`Q${r.quarter} ${r.year}`:r.period==="Monthly"?`${r.month}/${r.year}`:r.year;
+    const period = r.period==="Quarterly" ? `${r.quarter} ${r.year}` : r.period==="Monthly" ? `${r.month}/${r.year}` : r.year;
     return `<tr>
       <td><strong>${c?.name||"-"}</strong></td>
       <td>${badge(r.nature)}</td>
@@ -1138,49 +1168,67 @@ function renderUpsiTable(){
       <td><span style="font-weight:600">${r.source.name}</span><br><span style="font-size:10px;color:#94a3b8">${r.source.from}</span></td>
       <td><span style="font-size:11px">${fmtDate(r.time)}</span><br><span style="font-size:10px;color:#94a3b8">${fmtTime(r.time)}</span></td>
       <td><span style="font-size:11px;background:#f1f5f9;padding:2px 8px;border-radius:20px">${r.mode}</span></td>
-      <td>
-        <button onclick="viewUpsi('${r.id}')" style="padding:5px 10px;background:#eff6ff;color:#2563eb;border:none;border-radius:7px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer">View</button>
-      </td>
+      <td><button onclick="viewUpsi('${r.id}')" style="padding:5px 10px;background:#eff6ff;color:#2563eb;border:none;border-radius:7px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer">View</button></td>
     </tr>`;
   }).join("");
 }
 
 function openUpsiForm(){
   populateCompanySelects();
-  populateReceiverSelect();
-  // reset
-  ["f_upsi_company","f_upsi_nature","f_upsi_period","f_upsi_quarter","f_upsi_month","f_upsi_year","f_upsi_category","f_upsi_severity","f_src_name","f_src_phone","f_src_email","f_src_pan","f_src_desig","f_src_from","f_upsi_time","f_upsi_mode"].forEach(id=>{ const el=document.getElementById(id); if(el&&el.tagName==="INPUT")el.value=""; else if(el&&el.tagName==="SELECT")el.selectedIndex=0; });
-  document.getElementById("f_upsi_receivers").selectedIndex=-1;
-  onPeriodChange();
+  buildReceiverCheckboxes();
+  // hide inline panel if open
+  document.getElementById("inlineCoPanel").style.display = "none";
+  document.getElementById("inlineCoBtn").textContent = "+ New Company";
+  document.getElementById("inlineCoBtn").style.background = "#eff6ff";
+  document.getElementById("inlineCoBtn").style.color = "#2563eb";
+  document.getElementById("inlineCoBtn").style.borderColor = "#bfdbfe";
+  // reset selects to blank defaults
+  ["f_upsi_company","f_upsi_nature","f_upsi_period","f_upsi_quarter","f_upsi_month","f_upsi_year","f_upsi_category","f_upsi_severity","f_src_from","f_upsi_mode"].forEach(id=>{
+    const el=document.getElementById(id); if(el&&el.tagName==="SELECT") el.value="";
+  });
+  ["f_src_name","f_src_phone","f_src_email","f_src_pan","f_src_desig","f_upsi_time",
+   "f_upsi_period_custom","f_upsi_quarter_custom","f_upsi_month_custom","f_upsi_year_custom"].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value="";
+  });
+  // hide all custom fields & sub-period fields
+  ["fg_period_custom","fg_quarter_custom","fg_month_custom","fg_year_custom","fg_quarter","fg_month"].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display="none";
+  });
   openModal("modalUpsiForm");
 }
 
-function onPeriodChange(){
-  const p = document.getElementById("f_upsi_period").value;
-  document.getElementById("fg_quarter").style.display = p==="Quarterly"?"flex":"none";
-  document.getElementById("fg_month").style.display = p==="Monthly"?"flex":"none";
-}
-
 function saveUpsi(){
-  const company=document.getElementById("f_upsi_company").value;
-  const category=document.getElementById("f_upsi_category").value;
-  const srcName=document.getElementById("f_src_name").value.trim();
-  const srcFrom=document.getElementById("f_src_from").value;
-  const time=document.getElementById("f_upsi_time").value;
-  if(!company||!category||!srcName||!srcFrom||!time){ alert("Please fill all required fields (marked with *)"); return; }
-  const period=document.getElementById("f_upsi_period").value;
-  const rec={
-    id:gid(),companyId:Number(company),
-    nature:document.getElementById("f_upsi_nature").value,
-    period,
-    quarter:period==="Quarterly"?document.getElementById("f_upsi_quarter").value:"",
-    month:period==="Monthly"?document.getElementById("f_upsi_month").value:"",
-    year:document.getElementById("f_upsi_year").value,
-    category,severity:document.getElementById("f_upsi_severity").value,
-    source:{name:srcName,phone:document.getElementById("f_src_phone").value,email:document.getElementById("f_src_email").value,pan:document.getElementById("f_src_pan").value,designation:document.getElementById("f_src_desig").value,from:srcFrom},
-    time,mode:document.getElementById("f_upsi_mode").value,
-    receivers:Array.from(document.getElementById("f_upsi_receivers").selectedOptions).map(o=>Number(o.value)),
-    createdBy:currentUserId,createdAt:now()
+  const company   = document.getElementById("f_upsi_company").value;
+  const nature    = document.getElementById("f_upsi_nature").value;
+  const category  = document.getElementById("f_upsi_category").value;
+  const severity  = document.getElementById("f_upsi_severity").value;
+  const srcName   = document.getElementById("f_src_name").value.trim();
+  const srcFrom   = document.getElementById("f_src_from").value;
+  const time      = document.getElementById("f_upsi_time").value;
+  const mode      = document.getElementById("f_upsi_mode").value;
+  const period    = getPeriodVal();
+  const year      = getYearVal();
+
+  if(!company||!nature||!category||!severity||!srcName||!srcFrom||!time||!mode||!period||!year){
+    alert("Please fill all required fields (marked with *)");
+    return;
+  }
+  const quarter = (document.getElementById("f_upsi_period").value==="Quarterly") ? getQuarterVal() : "";
+  const month   = (document.getElementById("f_upsi_period").value==="Monthly")   ? getMonthVal()   : "";
+
+  const rec = {
+    id:gid(), companyId:Number(company), nature, period, quarter, month, year, category, severity,
+    source:{
+      name:srcName,
+      phone:document.getElementById("f_src_phone").value,
+      email:document.getElementById("f_src_email").value,
+      pan:document.getElementById("f_src_pan").value,
+      designation:document.getElementById("f_src_desig").value,
+      from:srcFrom
+    },
+    time, mode,
+    receivers: getSelectedReceivers(),
+    createdBy:currentUserId, createdAt:now()
   };
   UPSI.unshift(rec);
   addAudit("CREATE","UPSI",rec.id,"Created UPSI record for "+co(company)?.name);
@@ -1195,14 +1243,14 @@ function viewUpsi(id){
   if(!r) return;
   addAudit("VIEW","UPSI",id,"Viewed UPSI record "+id);
   const c=co(r.companyId);
-  const period=r.period==="Quarterly"?`Q${r.quarter} ${r.year}`:r.period==="Monthly"?`${r.month}/${r.year}`:r.year;
+  const period=r.period==="Quarterly"?`${r.quarter} ${r.year}`:r.period==="Monthly"?`${r.month}/${r.year}`:r.year;
   const rcvrs=r.receivers?.map(uid=>{ const u=user(uid); return u?`<span style="font-size:11px;background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:3px 10px;font-weight:600">${u.name}</span>`:""; }).join(" ")||"—";
   document.getElementById("upsiViewBody").innerHTML=`
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
     ${[["Company",c?.name],["Nature",r.nature,true],["Period",r.period],["Period Detail",period],["Category",r.category],["Severity",r.severity,true],["Mode",r.mode],["Time",fmtDate(r.time)+" "+fmtTime(r.time)]].map(([k,v,isBadge])=>`
       <div style="background:#f8fafc;border-radius:10px;padding:10px 12px">
         <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8">${k}</div>
-        <div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:3px">${isBadge?badge(v):v}</div>
+        <div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:3px">${isBadge?badge(v):v||"—"}</div>
       </div>`).join("")}
   </div>
   <div style="background:#f8fafc;border-radius:10px;padding:12px;margin-bottom:12px">
@@ -1222,7 +1270,7 @@ function viewUpsi(id){
 // ── PRE-CLEARANCE ─────────────────────────────────────────────────────────────
 function renderPreclearance(){
   const canCreate = currentRole==="rating";
-  const rows = currentRole==="compliance"?PRECLEARANCE:PRECLEARANCE.filter(r=>r.createdBy===currentUserId);
+  const rows = currentRole==="compliance" ? PRECLEARANCE : PRECLEARANCE.filter(r=>r.createdBy===currentUserId);
   const pending=PRECLEARANCE.filter(r=>r.status==="Pending").length;
   const approved=PRECLEARANCE.filter(r=>r.status==="Approved").length;
   const rejected=PRECLEARANCE.filter(r=>r.status==="Rejected").length;
@@ -1263,19 +1311,12 @@ function renderPreclearance(){
 
 function openPreForm(){
   populateCompanySelects();
-  ["f_pre_company","f_pre_qty","f_pre_date","f_pre_desc"].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.value="";
-  });
+  ["f_pre_qty","f_pre_date","f_pre_desc"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
+  document.getElementById("f_pre_company").value="";
   document.getElementById("f_pre_cin").value="";
   openModal("modalPreForm");
 }
-
-function onPreCompany(id){
-  const c=co(id);
-  document.getElementById("f_pre_cin").value=c?c.cin:"";
-}
-
+function onPreCompany(id){ const c=co(id); document.getElementById("f_pre_cin").value=c?c.cin:""; }
 function savePreclearance(){
   const company=document.getElementById("f_pre_company").value;
   const qty=document.getElementById("f_pre_qty").value;
@@ -1289,7 +1330,6 @@ function savePreclearance(){
   closeModal("modalPreForm");
   renderPreclearance();
 }
-
 function openReview(id){
   reviewingId=id;
   const r=PRECLEARANCE.find(x=>x.id===id);
@@ -1300,7 +1340,6 @@ function openReview(id){
   document.getElementById("f_review_remarks").value="";
   openModal("modalReview");
 }
-
 function doReview(status){
   const r=PRECLEARANCE.find(x=>x.id===reviewingId);
   if(!r) return;
@@ -1313,10 +1352,6 @@ function doReview(status){
 }
 
 // ── TRADING ───────────────────────────────────────────────────────────────────
-let tradeTypeFilter="";
-let tradeTxn="Buy";
-let tradeFor="Self";
-
 function setTradeTxn(v){
   tradeTxn=v;
   const buy=document.getElementById("tog_buy");
@@ -1369,25 +1404,24 @@ function renderTrading(){
 }
 
 function renderTradeTable(){
-  let rows = currentRole==="compliance"?TRADING:TRADING.filter(r=>r.createdBy===currentUserId);
+  let rows = currentRole==="compliance" ? TRADING : TRADING.filter(r=>r.createdBy===currentUserId);
   if(tradeTypeFilter) rows=rows.filter(r=>r.type===tradeTypeFilter);
   const tbody=document.getElementById("tradeTbody");
   if(!tbody) return;
   if(!rows.length){ tbody.innerHTML=`<tr><td colspan="9" class="empty">No disclosures found</td></tr>`; return; }
   tbody.innerHTML=rows.map(r=>{
     const c=co(r.companyId);
-    const txnBadge = (r.txn||"Buy")==="Buy"
-      ? `<span class="badge" style="background:#ecfdf5;color:#059669;border:1px solid #a7f3d0">▲ Buy</span>`
-      : `<span class="badge" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca">▼ Sell</span>`;
-    const forBadge = (r.tradeFor||"Self")==="Self"
-      ? `<span style="font-size:11px;color:#64748b">👤 Self</span>`
-      : `<span style="font-size:11px;color:#7c3aed">👨‍👩‍👧 ${r.relativeName||"Relative"}</span>`;
+    const txnBadge=(r.txn||"Buy")==="Buy"
+      ?`<span class="badge" style="background:#ecfdf5;color:#059669;border:1px solid #a7f3d0">▲ Buy</span>`
+      :`<span class="badge" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca">▼ Sell</span>`;
+    const forBadge=(r.tradeFor||"Self")==="Self"
+      ?`<span style="font-size:11px;color:#64748b">👤 Self</span>`
+      :`<span style="font-size:11px;color:#7c3aed">👨‍👩‍👧 ${r.relativeName||"Relative"}</span>`;
     const details=r.type==="Equity"?`${Number(r.qty||0).toLocaleString()} sh @ ₹${r.price||"-"}`
       :r.type==="Mutual Fund"?`${r.fundHouse||"-"} · ${r.scheme||"-"}`
       :r.type==="F&O"?`${r.underlying||"-"} ${r.foInst||""} · O:${r.openPosition||0} C:${r.closePosition||0}`
       :(r.type==="Bond"||r.type==="Debenture")?`${r.bondName||"-"}${r.coupon?" · "+r.coupon+"%":""}`
-      :r.type==="ETF"?`${r.etfName||"-"} · ${r.etfQty||"-"} units`
-      :"-";
+      :r.type==="ETF"?`${r.etfName||"-"} · ${r.etfQty||"-"} units`:"-";
     return `<tr>
       <td><strong>${c?.name||"-"}</strong></td>
       <td>${txnBadge}</td>
@@ -1410,9 +1444,7 @@ function openTradeForm(){
    "f_trade_under","f_trade_expiry","f_trade_strike","f_trade_open","f_trade_close","f_trade_margin",
    "f_trade_bondname","f_trade_isin","f_trade_coupon","f_trade_maturity","f_trade_face","f_trade_bond_units",
    "f_trade_etfname","f_trade_etf_qty","f_trade_etf_price","f_trade_desc",
-   "f_rel_name","f_rel_pan","f_rel_demat"].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.value="";
-  });
+   "f_rel_name","f_rel_pan","f_rel_demat"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
   document.getElementById("f_trade_type").selectedIndex=0;
   document.getElementById("fg_relative_fields").style.display="none";
   setTradeTxn("Buy"); setTradeFor("Self");
@@ -1443,8 +1475,8 @@ function saveTrading(){
   const type=document.getElementById("f_trade_type").value;
   if(!company||!amount||!date){ alert("Please fill required fields (Company, Amount, Date)"); return; }
   if(tradeFor==="Relative"){
-    if(!document.getElementById("f_rel_name").value.trim()) { alert("Please enter relative name"); return; }
-    if(!document.getElementById("f_rel_type").value) { alert("Please select relationship"); return; }
+    if(!document.getElementById("f_rel_name").value.trim()){ alert("Please enter relative name"); return; }
+    if(!document.getElementById("f_rel_type").value){ alert("Please select relationship"); return; }
   }
   const rec={id:gid(),companyId:Number(company),type,txn:tradeTxn,tradeFor,date,amount:Number(amount),description:document.getElementById("f_trade_desc").value,createdBy:currentUserId,createdAt:now()};
   if(tradeFor==="Relative"){ rec.relativeName=document.getElementById("f_rel_name").value; rec.relationType=document.getElementById("f_rel_type").value; rec.relativePan=document.getElementById("f_rel_pan").value; rec.relDemat=document.getElementById("f_rel_demat").value; }
@@ -1459,11 +1491,19 @@ function saveTrading(){
   renderTradeTable();
 }
 
-// ── AUDIT ─────────────────────────────────────────────────────────────────────
+// ── AUDIT — Rating team sees only own actions ─────────────────────────────────
 function renderAudit(){
+  const isRating = currentRole==="rating";
   document.getElementById("page-audit").innerHTML=`
   <div class="page-header">
-    <div><div class="page-title">Audit Log</div><div class="page-sub">Complete activity trail across all modules</div></div>
+    <div>
+      <div class="page-title">Audit Log</div>
+      <div class="page-sub">${isRating?"Your own activity trail":"Complete activity trail across all modules"}</div>
+    </div>
+    ${isRating?`<div style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;font-size:11px;font-weight:700;color:#d97706">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Showing your actions only
+    </div>`:""}
   </div>
   <div class="filter-row">
     <select class="filter-select" id="auditModFilter" onchange="renderAuditTable()">
@@ -1484,9 +1524,14 @@ function renderAudit(){
 }
 
 function renderAuditTable(){
+  const isRating = currentRole==="rating";
   const mod=document.getElementById("auditModFilter")?.value||"";
   const act=document.getElementById("auditActFilter")?.value||"";
-  let rows=AUDIT.filter(l=>(!mod||l.module===mod)&&(!act||l.action===act));
+  // Rating team: only their own actions. Compliance: all.
+  let rows = isRating
+    ? AUDIT.filter(l=>l.userId===currentUserId)
+    : AUDIT;
+  rows = rows.filter(l=>(!mod||l.module===mod)&&(!act||l.action===act));
   const cnt=document.getElementById("auditCount");
   if(cnt) cnt.textContent=rows.length+" entries";
   const tbody=document.getElementById("auditTbody");
@@ -1517,11 +1562,10 @@ function renderCompanies(){
   <div class="company-grid" id="companyGrid"></div>`;
   renderCompanyGrid();
 }
-
 function renderCompanyGrid(){
   const el=document.getElementById("companyGrid");
   if(!el) return;
-  el.innerHTML = COMPANIES.map(c=>`
+  el.innerHTML=COMPANIES.map(c=>`
     <div class="company-card">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
         <div style="min-width:0">
@@ -1531,7 +1575,7 @@ function renderCompanyGrid(){
         </div>
         <span class="sector-pill" style="flex-shrink:0">${c.sector}</span>
       </div>
-      ${c.isin?`<div style="margin-top:8px;font-size:10px;color:#94a3b8">ISIN: <span style="font-family:'DM Mono',monospace">${c.isin}</span>${c.exchange?` &nbsp;·&nbsp; ${c.exchange}`:""}</div>`:""}
+      ${c.isin?`<div style="margin-top:8px;font-size:10px;color:#94a3b8">ISIN: <span style="font-family:'DM Mono',monospace">${c.isin}</span>${c.exchange?` · ${c.exchange}`:""}</div>`:""}
       <div style="display:flex;gap:16px;margin-top:12px;padding-top:10px;border-top:1px solid #f1f5f9">
         <div><div style="font-size:10px;color:#94a3b8;margin-bottom:2px">UPSI</div><div style="font-weight:900;font-size:18px;color:#1e293b">${UPSI.filter(r=>r.companyId===c.id).length}</div></div>
         <div><div style="font-size:10px;color:#94a3b8;margin-bottom:2px">Pre-Clear</div><div style="font-weight:900;font-size:18px;color:#1e293b">${PRECLEARANCE.filter(r=>r.companyId===c.id).length}</div></div>
@@ -1539,27 +1583,25 @@ function renderCompanyGrid(){
       </div>
     </div>`).join("");
 }
-
 function openCompanyForm(){
   ["f_co_name","f_co_cin","f_co_pan","f_co_isin"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
   document.getElementById("f_co_sector").selectedIndex=0;
   document.getElementById("f_co_exchange").selectedIndex=0;
   openModal("modalCompanyForm");
 }
-
 function saveCompany(){
   const name=document.getElementById("f_co_name").value.trim();
   const cin=document.getElementById("f_co_cin").value.trim().toUpperCase();
   const pan=document.getElementById("f_co_pan").value.trim().toUpperCase();
   const sector=document.getElementById("f_co_sector").value;
   if(!name){ alert("Company name is required"); return; }
-  if(!cin||cin.length!==21){ alert("CIN is required and must be 21 characters"); return; }
-  if(!pan||pan.length!==10){ alert("PAN is required and must be 10 characters"); return; }
+  if(!cin||cin.length!==21){ alert("CIN must be exactly 21 characters"); return; }
+  if(!pan||pan.length!==10){ alert("PAN must be exactly 10 characters"); return; }
   if(!sector){ alert("Please select a sector"); return; }
   if(COMPANIES.find(c=>c.cin===cin)){ alert("A company with this CIN already exists"); return; }
   const newCo={id:COMPANIES.length+1,cin,pan,name,sector,isin:document.getElementById("f_co_isin").value.trim(),exchange:document.getElementById("f_co_exchange").value};
   COMPANIES.push(newCo);
-  addAudit("CREATE","Companies",newCo.id.toString(),"Added company: "+name+" by "+currentUser().name);
+  addAudit("CREATE","Companies",String(newCo.id),"Added company: "+name+" by "+currentUser().name);
   addNotif(currentUserId,"Company \""+name+"\" added successfully","success");
   populateCompanySelects();
   closeModal("modalCompanyForm");
